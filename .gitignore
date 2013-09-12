@@ -1,0 +1,6 @@
+*.log
+/bin/
+/sample/bin/
+/test-results/
+obj/
+sample/obj/
