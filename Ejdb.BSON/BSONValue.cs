@@ -103,6 +103,10 @@ namespace Ejdb.BSON {
             if (v == null)
                 return GetNull();
 
+            var arrayValue = v as Array;
+            if (arrayValue != null)
+                return GetArray(new BsonArray(arrayValue));
+
             Func<object, BsonValue> setter;
             var vtype = v.GetType();
             TYPE_SETTERS.TryGetValue(vtype, out setter);
@@ -237,52 +241,32 @@ namespace Ejdb.BSON {
 	        return new BsonValue(BsonType.CODEWSCOPE, val);
 	    }
 
-	    public static Dictionary<Type, Func<object, BsonValue>> TYPE_SETTERS =  new Dictionary<Type, Func<object, BsonValue>> 
+	    private static Dictionary<Type, Func<object, BsonValue>> TYPE_SETTERS =  new Dictionary<Type, Func<object, BsonValue>> 
 	    {
 	        {typeof(bool), v => GetBool((bool) v)},
-	        {typeof(bool[]), v => GetArray(new BsonArray((bool[]) v))},
 	        {typeof(byte), v => GetNumber((int) v)},
 	        {typeof(sbyte), v => GetNumber((int) v)},
 	        {typeof(ushort), v => GetNumber((int) v)},
-	        {typeof(ushort[]), v => GetArray(new BsonArray((ushort[]) v))},
 	        {typeof(short), v => GetNumber((int) v)},
-	        {typeof(short[]), v => GetArray(new BsonArray((short[]) v))},
 	        {typeof(uint), v => GetNumber((int) v)},
-	        {typeof(uint[]), v => GetArray(new BsonArray((uint[]) v))},
 	        {typeof(int), v => GetNumber((int) v)},
-	        {typeof(int[]), v => GetArray(new BsonArray((int[]) v))},
 	        {typeof(ulong), v => GetNumber((long) v)},
-	        {typeof(ulong[]), v => GetArray(new BsonArray((ulong[]) v))},
 	        {typeof(long), v => GetNumber((long) v)},
-	        {typeof(long[]), v => GetArray(new BsonArray((long[]) v))},
 	        {typeof(float), v => GetNumber((float) v)},
-	        {typeof(float[]), v => GetArray(new BsonArray((float[]) v))},
 	        {typeof(double), v => GetNumber((double) v)},
-	        {typeof(double[]), v => GetArray(new BsonArray((double[]) v))},
 	        {typeof(char), v => GetString(v.ToString())},
 	        {typeof(string), v => GetString((string) v)},
-	        {typeof(string[]), v => GetArray(new BsonArray((string[]) v))},
 	        {typeof(BsonOid), v => GetOID((BsonOid) v)},
-	        {typeof(BsonOid[]), v => GetArray(new BsonArray((BsonOid[]) v))},
 	        {typeof(BsonRegexp), v => GetRegexp((BsonRegexp) v)},
-	        {typeof(BsonRegexp[]), v => GetArray(new BsonArray((BsonRegexp[]) v))},
 	        {typeof(BsonValue), v => (BsonValue) v},
 	        {typeof(BsonTimestamp), v => GetTimestamp((BsonTimestamp) v)},
-	        {typeof(BsonTimestamp[]), v => GetArray(new BsonArray((BsonTimestamp[]) v))},
 	        {typeof(BsonCodeWScope), v => GetCodeWScope((BsonCodeWScope) v)},
-	        {typeof(BsonCodeWScope[]), v => GetArray(new BsonArray((BsonCodeWScope[]) v))},
 	        {typeof(BsonBinData), v => GetBinData((BsonBinData) v)},
-	        {typeof(BsonBinData[]), v => GetArray(new BsonArray((BsonBinData[]) v))},
 	        {typeof(BsonDocument), v => GetDocument((BsonDocument) v)},
-	        {typeof(BsonDocument[]), v => GetArray(new BsonArray((BsonDocument[]) v))},
 	        {typeof(BsonArray), v => GetArray((BsonArray) v)},
-	        {typeof(BsonArray[]), v => GetArray(new BsonArray((BsonArray[]) v))},
 	        {typeof(DateTime), v => GetDate((DateTime) v)},
-	        {typeof(DateTime[]), v => GetArray(new BsonArray((DateTime[]) v))},
 	        {typeof(BsonUndefined), v => GetUndefined()},
-	        {typeof(BsonUndefined[]), v => GetArray(new BsonArray((BsonUndefined[]) v))},
 	        {typeof(BsonNull), v => GetNull() },
-	        {typeof(BsonNull[]), v => GetArray(new BsonArray((BsonNull[]) v))}
 	    };
 	}
 }
