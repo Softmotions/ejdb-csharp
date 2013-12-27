@@ -22,7 +22,10 @@ using System.Collections.Generic;
 
 namespace Ejdb.BSON {
 
-	public sealed class BsonIterator : IDisposable, IEnumerable<BsonType> {
+	public sealed class BsonIterator : IDisposable, IEnumerable<BsonType> 
+    {
+        private static readonly Encoding STRICT_ENCODING = new UTF8Encoding(false, true);
+
 		ExtBinaryReader _input;
 
 		bool _closeOnDispose = true;
@@ -252,11 +255,19 @@ namespace Ejdb.BSON {
                 case BsonType.CODE:
                 case BsonType.SYMBOL:
                     {
-                        Debug.Assert(_entryLen - 1 >= 0);
-                        string sv = Encoding.UTF8.GetString(_input.ReadBytes(_entryLen - 1));
+                        if (_entryLen <= 0)
+                        {
+                            var message = string.Format("Invalid string length: {0} (the length includes the null terminator so it must be greater than or equal to 1).", _entryLen);
+                            throw new BsonSerializationException(message);
+                        }
+
+                        string sv = STRICT_ENCODING.GetString(_input.ReadBytes(_entryLen - 1));
                         _entryDataValue = new BsonValue(_ctype, (object) sv);
-                        var rb = _input.ReadByte();
-                        Debug.Assert(rb == 0x00); //trailing zero byte
+                        var finalByte = _input.ReadByte();
+
+                        if (finalByte != 0x00)
+                            throw new BsonSerializationException("String is missing null terminator.");
+
                         break;
                     }
                 case BsonType.BOOL:
@@ -284,8 +295,9 @@ namespace Ejdb.BSON {
                     _entryDataValue = new BsonValue(_ctype, _input.ReadInt64());
                     break;
                 case BsonType.DATE:
-                    _entryDataValue = new BsonValue(_ctype,
-                                                    BsonConstants.Epoch.AddMilliseconds(_input.ReadInt64()));
+			        var milliseconds = _input.ReadInt64();
+			        var dateTime = BsonConstants.Epoch.AddMilliseconds(milliseconds);
+			        _entryDataValue = new BsonValue(_ctype, dateTime);
                     break;
                 case BsonType.TIMESTAMP:
                     {
@@ -322,7 +334,7 @@ namespace Ejdb.BSON {
                         int cwlen = _entryLen + 4;
                         Debug.Assert(cwlen > 5);
                         int clen = _input.ReadInt32(); //code length
-                        string code = Encoding.UTF8.GetString(_input.ReadBytes(clen));
+                        string code = STRICT_ENCODING.GetString(_input.ReadBytes(clen));
                         BsonCodeWScope cw = new BsonCodeWScope(code);
                         BsonIterator sit = new BsonIterator(_input, _input.ReadInt32());
                         while (sit.Next() != BsonType.EOO)

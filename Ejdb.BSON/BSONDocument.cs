@@ -72,13 +72,25 @@ namespace Ejdb.BSON {
             _fields = new Dictionary<string, BsonValue>();
 		}
 
-		public BsonDocument(BsonIterator it) : this() {
+		public BsonDocument(BsonIterator it) 
+            : this() 
+        {
 			while (it.Next() != BsonType.EOO)
 			{
 			    var value = it.FetchCurrentValue();
 			    Add(it.CurrentKey, value);
 			}
 		}
+
+        /// <summary>
+        /// Initializes a new instance of the BsonDocument class and adds new elements from a dictionary of key/value pairs.
+        /// </summary>
+        /// <param name="dictionary">A dictionary to initialize the document from.</param>
+        public BsonDocument(Dictionary<string, object> dictionary)
+        {
+            foreach (var entry in dictionary)
+                Add(entry.Key, BsonValue.ValueOf(entry.Value));
+        }
 
 		public BsonDocument(BsonIterator it, string[] fields) : this() {
 			Array.Sort(fields);
@@ -291,7 +303,7 @@ namespace Ejdb.BSON {
 	    {
 	        long start = stream.Position;
 	        stream.Position += 4; //skip int32 document size
-	        using (var bw = new ExtBinaryWriter(stream, Encoding.UTF8, true))
+	        using (var bw = new ExtBinaryWriter(stream, true))
 	        {
 	            foreach (var bv in _fields)
 	                WriteBsonValue(bv.Key, bv.Value, bw);
@@ -314,17 +326,19 @@ namespace Ejdb.BSON {
 			if (!(obj is BsonDocument)) {
 				return false;
 			}
-			BsonDocument d1 = this;
-			BsonDocument d2 = ((BsonDocument) obj);
-			if (d1.KeysCount != d2.KeysCount) {
+			var d1 = this;
+			var d2 = ((BsonDocument) obj);
+
+			if (d1.KeysCount != d2.KeysCount) 
 				return false;
-			}
-			foreach (var bv1 in d1._fields) {
-				BsonValue bv2 = d2.GetBsonValue(bv1.Key);
-				if (bv1.Value != bv2) {
+
+			foreach (var bv1 in d1._fields) 
+            {
+				var bv2 = d2.GetBsonValue(bv1.Key);
+				if (bv1.Value != bv2) 
 					return false;
-				}
 			}
+
 			return true;
 		}
 
@@ -377,6 +391,8 @@ namespace Ejdb.BSON {
 		// 						Private staff										  
 		//.//////////////////////////////////////////////////////////////////
 
+       
+
 	    public BsonDocument Add(string key, BsonValue val)
         {
             _cachedhash = null;
@@ -394,6 +410,11 @@ namespace Ejdb.BSON {
                 _fields.Add(key, val);
 
             return this;
+        }
+
+        public BsonDocument Add(string key, object value)
+        {
+            return Add(key, BsonValue.ValueOf(value));
         }
 
 	    protected void WriteBsonValue(string key, BsonValue bv, ExtBinaryWriter bw) 
@@ -446,7 +467,7 @@ namespace Ejdb.BSON {
                 case BsonType.DATE:
                     {
                         DateTime dt = (DateTime)bv.Value;
-                        var diff = dt.ToLocalTime() - BsonConstants.Epoch;
+                        var diff = dt.LocalTime() - BsonConstants.Epoch;
                         long time = (long)Math.Floor(diff.TotalMilliseconds);
                         WriteTypeAndKey(key, bv, bw);
                         bw.Write(time);

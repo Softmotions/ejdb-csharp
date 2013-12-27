@@ -21,15 +21,17 @@ namespace Ejdb.IO {
 
 	public class ExtBinaryWriter : BinaryWriter {
 
-		public static Encoding DEFAULT_ENCODING = Encoding.UTF8;
-		Encoding _encoding;
-		bool _leaveopen;
+        private static readonly Encoding DEFAULT_ENCODING = new UTF8Encoding(false, true);
+        
+        private Encoding _encoding;
+        private bool _leaveopen;
 
 		public ExtBinaryWriter() {
 			_encoding = DEFAULT_ENCODING;
 		}
 
-		public ExtBinaryWriter(Stream output) : this(output, DEFAULT_ENCODING, false) {
+		public ExtBinaryWriter(Stream output) 
+            : this(output, DEFAULT_ENCODING, false) {
 		}
 
 		public ExtBinaryWriter(Stream output, Encoding encoding, bool leaveopen) 
@@ -57,9 +59,16 @@ namespace Ejdb.IO {
 			Write((byte) 0x00);
 		}
 
-		public void WriteCString(string val) {
-			if (val.Length > 0) {
-				Write(_encoding.GetBytes(val));
+        public void WriteCString(string value)
+        {
+            if (value == null)
+                throw new ArgumentNullException("value");
+            
+            if (value.IndexOf('\0') != -1)
+                throw new ArgumentException("CStrings cannot contain nulls.", "value");
+
+			if (value.Length > 0) {
+                Write(_encoding.GetBytes(value));
 			}
 			Write((byte) 0x00);
 		}

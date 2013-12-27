@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Ejdb.BSON;
-using System.IO;
 
 namespace Ejdb.Tests {
 
@@ -34,7 +33,7 @@ namespace Ejdb.Tests {
         [Test]
         public void SerializeEmpty_WithoutSeek()
         {
-            using (var stream = new StreamWithoutSeek())
+            using (var stream = new MockStream(canSeek: false))
             {
                 var doc = new BsonDocument();
                 doc.Serialize(stream);
@@ -76,23 +75,23 @@ namespace Ejdb.Tests {
 
             doc2.Add("1", BsonValue.Create(Int32.MaxValue));
 
-            //13-00-00-00   len
-            //10            type
-            //30-00         key
-            //02-00-00-00   int val
-            //10            type
-            //31-00         key
-            //FF-FF-FF-7F   value
-            //00            zero term
-            const string expectedByteArray = "13-00-00-00-10-30-00-02-00-00-00-10-31-00-FF-FF-FF-7F-00";
+            var expected = _PrepareBytesString(
+                @"13-00-00-00-"     // len
+                + @"10-"            // type
+                + @"30-00-"         // key
+                + @"02-00-00-00-"   // int val
+                + @"10-"            // type
+                + @"31-00-"         // key
+                + @"FF-FF-FF-7F-"   // value
+                + @"00");           // zero term
 
-            Assert.AreEqual(expectedByteArray, doc2.ToDebugDataString());
+            Assert.AreEqual(expected, doc2.ToDebugDataString());
 
             doc2 = new BsonDocument(doc2);
-            Assert.AreEqual(expectedByteArray, doc2.ToDebugDataString());
+            Assert.AreEqual(expected, doc2.ToDebugDataString());
 
             doc2 = new BsonDocument(doc2.ToByteArray());
-            Assert.AreEqual(expectedByteArray, doc2.ToDebugDataString());
+            Assert.AreEqual(expected, doc2.ToDebugDataString());
         }
 
         [Test]
@@ -132,46 +131,70 @@ namespace Ejdb.Tests {
             Assert.AreEqual(1986, array[2]);
         }
 
-
-
-		[Test]
-		public void TestAnonTypes() 
+        [Test]
+        public void SerializeDateTimeUtc()
         {
-			BsonDocument doc = BsonDocument.ValueOf(new {a = "b", c = 1});
+            var dateTime = DateTime.SpecifyKind(new DateTime(2010, 1, 1), DateTimeKind.Utc);
+            _TestSerializeDateTime(dateTime);
+        }
 
-            //13-00-00-00   len
-            //10            type
-            //30-00         key
-            //02-00-00-00   int val
-            //10            type
-            //31-00         key
-            //FF-FF-FF-7F   value
-            //00            zero term
+        [Test]
+        public void SerializeDateTimeLocal()
+        {
+            var dateTime = DateTime.SpecifyKind(new DateTime(2010, 1, 1), DateTimeKind.Local);
+            _TestSerializeDateTime(dateTime);
+        }
 
+	    private static void _TestSerializeDateTime(DateTime dateTime)
+	    {
+	        var document = new BsonDocument
+	        {
+	            {"date", dateTime}
+	        };
 
-			//15-00-00-00           len
-			//02                    type 'string'
-            //61-00                 key 'a'   
-			//02-00-00-00           length of value 'b'           
-            //62-00                 value 'b'
-			//10                    type 'int'
-            //63-00                 key 'c'
-            //01-00-00-00           value 1
-            //00            zero term
-			Assert.AreEqual("15-00-00-00-02-61-00-02-00-00-00-62-00-10-63-00-01-00-00-00-00", doc.ToDebugDataString());
+	        var rehydrated = new BsonDocument(document.ToByteArray());
+	        var dateTime2 = (DateTime) rehydrated["date"];
+            Assert.AreEqual(dateTime.ToUniversalTime(), dateTime2.ToUniversalTime());
+	    }
 
-			doc["d"] = new{e=new BsonRegexp("r1", "o2")}; //subdocument
-			//26-00-00-00-02-61-00-02-00-00-00-62-00-10-63-00-01-00-00-00-
-			//03
-			//64-00
-			//0E-00-00-00
-			//0B
-			//65-00
-			//72-31-00-6F-32-00-00-00
-			Assert.AreEqual("26-00-00-00-02-61-00-02-00-00-00-62-00-10-63-00-01-00-00-00-" +
-				"03-64-00-0E-00-00-00-0B-65-00-72-31-00-6F-32-00-00-00", 
-			                doc.ToDebugDataString());
+	    [Test]
+		public void SerializeAnonmyousType() 
+        {
+			var doc = BsonDocument.ValueOf(new {a = "b", c = 1});
+
+            var expected = _PrepareBytesString(
+                  @"15-00-00-00-           " // len
+                + @"02-                    " // type 'string'
+                + @"61-00-                 " // key 'a'   
+                + @"02-00-00-00-           " // length of value 'b'           
+                + @"62-00-                 " // value 'b'
+                + @"10-                    " // type 'int'
+                + @"63-00-                 " // key 'c'
+                + @"01-00-00-00-           " // value 1
+                + @"00");                   // zero term
+
+			Assert.AreEqual(expected, doc.ToDebugDataString());
+
 		}
+        
+        [Test]
+        public void SerializeRegex()
+        {
+            var doc = BsonDocument.ValueOf(new
+            {
+                e = new BsonRegexp("r1", "o2")
+            });
+
+            var expected = _PrepareBytesString(
+                  @"0E-00-00-00-           " // len
+                + @"0B-                    " // type 'regex'
+                + @"65-00-                 " // key 'e'
+                + @"72-31-00-              " // re 'r1' + term
+                + @"6F-32-00-              " // opt 'o2' + term
+                + @"00");                   // zero term
+
+            Assert.AreEqual(expected, doc.ToDebugDataString());
+        }
 
 		[Test]
 		public void TestIterate1() 
@@ -179,6 +202,7 @@ namespace Ejdb.Tests {
 			var doc = new BsonDocument();
 			doc["a"] = "av";
 			doc["bb"] = 24;
+
 			//doc["ccc"] = BsonDocument.ValueOf(new{na1 = 1, nb = "2"});
 			//doc["d"] = new BsonOid("51b9f3af98195c4600000000");
 
@@ -374,8 +398,14 @@ namespace Ejdb.Tests {
             return bytes.ToArray();
         }
 
-        private static string __hexDigits = "0123456789abcdef";
+        private static string _PrepareBytesString(string bytesString)
+        {
+            return bytesString.Replace(" ", "").Replace("\t", "");
+        }
 
+        private static string __hexDigits = "0123456789abcdef";
 	}
+
+
 }
 

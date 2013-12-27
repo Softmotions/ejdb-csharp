@@ -60,12 +60,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Ejdb.BSON\BsonSerializationException.cs" />
+    <Compile Include="Ejdb.BSON\BSONValueWithKey.cs" />
     <Compile Include="Ejdb.DB\EJDB.cs" />
     <Compile Include="Ejdb.DB\Query\Query.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryReader.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryWriter.cs" />
     <Compile Include="Ejdb.DB\Query\IQuery.cs" />
-    <Compile Include="Ejdb.Tests\TestBSON.cs" />
+    <Compile Include="Ejdb.Tests\MockStream.cs" />
+    <Compile Include="Ejdb.Tests\TestBsonArray.cs" />
+    <Compile Include="Ejdb.Tests\TestBsonStringSerialization.cs" />
+    <Compile Include="Ejdb.Tests\TestBsonSerialization.cs" />
     <Compile Include="Ejdb.Utils\HelperExtensions.cs" />
     <Compile Include="Ejdb.Utils\TypeExtension.cs" />
     <Compile Include="Ejdb.BSON\BSONType.cs" />
@@ -86,7 +91,7 @@
     <Compile Include="Ejdb.DB\EJDBQuery.cs" />
     <Compile Include="Ejdb.DB\EJDBQueryException.cs" />
     <Compile Include="Ejdb.DB\EJDBQCursor.cs" />
-    <Compile Include="Ejdb.BSON\BSONull.cs" />
+    <Compile Include="Ejdb.BSON\BsonNull.cs" />
     <Compile Include="Ejdb.BSON\BSONUndefined.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
