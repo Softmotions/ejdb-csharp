@@ -20,6 +20,7 @@ using System.Text;
 using System.Diagnostics;
 using Ejdb.IO;
 using System.Linq;
+using Ejdb.Utils;
 
 namespace Ejdb.BSON {
 
@@ -364,7 +365,8 @@ namespace Ejdb.BSON {
 			return !(d1 == d2);
 		}
 
-		public static BsonDocument ValueOf(object val) {
+		public static BsonDocument ValueOf(object val) 
+        {
 		    if (val == null)
 		        return new BsonDocument();
 
@@ -376,7 +378,7 @@ namespace Ejdb.BSON {
 		    if (vtype == typeof (byte[]))
 		        return new BsonDocument((byte[]) val);
 
-		    return BsonValue.GetAnonTypeDocument(val);
+		    return BsonValue.GetDocumentForCustomClassObject(val);
 		}
 
 		public object Clone() {

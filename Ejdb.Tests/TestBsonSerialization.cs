@@ -176,8 +176,32 @@ namespace Ejdb.Tests {
                 + @"00");                   // zero term
 
 			Assert.AreEqual(expected, doc.ToDebugDataString());
-
 		}
+
+        [Test]
+        public void SerializeNamedType()
+        {
+            var doc = BsonDocument.ValueOf(new DemoType { a = "b", c = 1 });
+
+            var expected = _PrepareBytesString(
+                  @"15-00-00-00-           " // len
+                + @"02-                    " // type 'string'
+                + @"61-00-                 " // key 'a'   
+                + @"02-00-00-00-           " // length of value 'b'           
+                + @"62-00-                 " // value 'b'
+                + @"10-                    " // type 'int'
+                + @"63-00-                 " // key 'c'
+                + @"01-00-00-00-           " // value 1
+                + @"00");                   // zero term
+
+            Assert.AreEqual(expected, doc.ToDebugDataString());
+        }
+
+        class DemoType
+        {
+            public string a { get; set; }
+            public int c { get; set; }
+        }
         
         [Test]
         public void SerializeRegex()

@@ -16,6 +16,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Ejdb.DB;
+using Ejdb.Tests;
 
 namespace Ejdb.BSON {
 
@@ -113,28 +115,36 @@ namespace Ejdb.BSON {
             TYPE_SETTERS.TryGetValue(vtype, out setter);
 
             if (setter == null)
-                setter = GetAnonTypeValue;
+                setter = GetValueForCustomClassObject;
 
             var bsonValue = setter(v);
             return bsonValue;
         }
 
-	    public static BsonDocument GetAnonTypeDocument(object val)
+	    public static BsonDocument GetDocumentForCustomClassObject(object val)
 	    {
-	        var ndoc = new BsonDocument();
-	        Type vtype = val.GetType();
-	        foreach (PropertyInfo pi in vtype.GetProperties()) 
+	        var type = val.GetType();
+	        if ((type.IsClass || (type.IsValueType && !type.IsPrimitive)) &&
+	            !typeof (Array).IsAssignableFrom(type) &&
+	            !typeof (Enum).IsAssignableFrom(type))
 	        {
-	            if (pi.CanRead) 
-	                ndoc[pi.Name] = pi.GetValue(val, null);
+	            var bsonDocument = new BsonDocument();
+	            var classMap = BsonClassSerialization.LookupClassMap(type);
+	            foreach (var member in classMap.AllMemberMaps)
+	            {
+	                var value = member.Getter(val);
+	                bsonDocument.Add(member.ElementName, value);
+	            }
+
+	            return bsonDocument;
 	        }
 
-	        return ndoc;
+	        throw new Exception(string.Format("Type '{0}' not supported for custom class serialization", type.FullName));
 	    }
 
-	    public static BsonValue GetAnonTypeValue(object val)
+	    public static BsonValue GetValueForCustomClassObject(object val)
 	    {
-	        return Create(GetAnonTypeDocument(val));
+	        return Create(GetDocumentForCustomClassObject(val));
 	    }
 
 	    public static BsonValue GetNull() 

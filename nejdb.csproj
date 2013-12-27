@@ -64,7 +64,11 @@
     <Compile Include="Ejdb.BSON\BsonSerializationException.cs" />
     <Compile Include="Ejdb.BSON\BSONValueWithKey.cs" />
     <Compile Include="Ejdb.DB\EJDB.cs" />
+    <Compile Include="Ejdb.DB\Query\PartialQuery.cs" />
     <Compile Include="Ejdb.DB\Query\Query.cs" />
+    <Compile Include="Ejdb.BSON\Serialization\BsonClassMap.cs" />
+    <Compile Include="Ejdb.BSON\Serialization\BsonClassSerialization.cs" />
+    <Compile Include="Ejdb.BSON\Serialization\BsonMemberMap.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryReader.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryWriter.cs" />
     <Compile Include="Ejdb.DB\Query\IQuery.cs" />
