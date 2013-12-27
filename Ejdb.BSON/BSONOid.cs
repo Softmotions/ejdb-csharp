@@ -30,6 +30,16 @@ namespace Ejdb.BSON {
 			}
 		}
 
+        public static BSONOid Empty
+        {
+            get
+            {
+                var result = new BSONOid();
+                result._bytes = new byte[12];
+                return result;
+            }
+        }
+
 		BSONOid() {
 		}
 

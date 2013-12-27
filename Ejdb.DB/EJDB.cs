@@ -228,6 +228,10 @@ namespace Ejdb.DB {
 				Marshal.FreeHGlobal(cptr); //UnixMarshal.FreeHeap(cptr);
 			}
 		}
+
+        [DllImport(EJDB_LIB_NAME, EntryPoint = "bson_oid_gen", CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void _bson_oid_gen([Out] byte[] oid);
+
 		//EJDB_EXPORT bson* ejdbcommand2(EJDB *jb, void *cmdbsondata);
 		[DllImport(EJDB_LIB_NAME, EntryPoint = "ejdbcommand2", CallingConvention = CallingConvention.Cdecl)]
 		internal static extern IntPtr _ejdbcommand([In] IntPtr db, [In] byte[] cmd);
@@ -795,6 +799,13 @@ namespace Ejdb.DB {
 			return rv;
 		}
 
+        public static BSONOid GenerateId()
+        {
+            byte[] oiddata = new byte[12];
+            _bson_oid_gen(oiddata);
+            return new BSONOid(oiddata);
+        }
+
 		public bool Save(string cname, params object[] docs) {
 			CheckDisposed();
 			IntPtr cptr = _ejdbcreatecoll(_db, cname, null);
@@ -1034,6 +1045,8 @@ namespace Ejdb.DB {
 				return _db;
 			}
 		}
+
+        
 
 		byte[] BsonPtrIntoByteArray(IntPtr bsptr, bool deletebsptr = true) {
 			if (bsptr == IntPtr.Zero) {
