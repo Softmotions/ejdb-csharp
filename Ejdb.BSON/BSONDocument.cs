@@ -515,12 +515,12 @@ namespace Ejdb.BSON {
 				return (BSONDocument) val;
 			} else if (vtype == typeof(byte[])) {
 				return new BSONDocument((byte[]) val);
-			} else if (vtype.IsAnonymousType()) {
+			} else /* if (vtype.IsAnonymousType()) */ { 
 				BSONDocument doc = new BSONDocument();
 				SetAnonType(doc, null, val);
 				return doc;
 			} 
-			throw new InvalidCastException(string.Format("Unsupported cast type: {0}", vtype));
+			// throw new InvalidCastException(string.Format("Unsupported cast type: {0}", vtype));
 		}
 
 		public object Clone() {
