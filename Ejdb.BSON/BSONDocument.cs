@@ -467,7 +467,7 @@ namespace Ejdb.BSON {
                 case BsonType.DATE:
                     {
                         DateTime dt = (DateTime)bv.Value;
-                        var diff = dt.LocalTime() - BsonConstants.Epoch;
+                        var diff = dt.ToUniversalTime() - BsonConstants.Epoch;
                         long time = (long)Math.Floor(diff.TotalMilliseconds);
                         WriteTypeAndKey(key, bv, bw);
                         bw.Write(time);
