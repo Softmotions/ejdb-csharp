@@ -14,6 +14,7 @@
 //   Boston, MA 02111-1307 USA.
 // ============================================================================================
 using System;
+using System.Linq;
 using Ejdb.DB;
 using Ejdb.BSON;
 
@@ -21,21 +22,22 @@ namespace sample {
 
 	class MainClass {
 
-		public static void Main(string[] args) {
+		public static void Main(string[] args) 
+            {
 			var jb = new EJDB("zoo", EJDB.DEFAULT_OPEN_MODE | EJDB.JBOTRUNC);
 			jb.ThrowExceptionOnFail = true;
 
-			var parrot1 = BSONDocument.ValueOf(new {
+			var parrot1 = BsonDocument.ValueOf(new {
 				name = "Grenny",
 				type = "African Grey",
 				male = true,
 				age = 1,
 				birthdate = DateTime.Now,
 				likes = new string[] { "green color", "night", "toys" },
-				extra = BSONull.VALUE
+				extra = BsonNull.VALUE
 			});
 
-			var parrot2 = BSONDocument.ValueOf(new {
+			var parrot2 = BsonDocument.ValueOf(new {
 				name = "Bounty",
 				type = "Cockatoo",
 				male = false,
@@ -46,8 +48,8 @@ namespace sample {
 
 			jb.Save("parrots", parrot1, parrot2);
 
-			Console.WriteLine("Grenny OID: " + parrot1["_id"]);
-			Console.WriteLine("Bounty OID: " + parrot2["_id"]);
+                       Console.WriteLine("Grenny OID: " + parrot1[BsonConstants.Id]);
+                       Console.WriteLine("Bounty OID: " + parrot2[BsonConstants.Id]);
 
 			var q = jb.CreateQuery(new {
 				likes = "toys"
@@ -57,14 +59,15 @@ namespace sample {
 				Console.WriteLine("Found " + cur.Length + " parrots");
 				foreach (var e in cur) {
 					//fetch  the `name` and the first element of likes array from the current BSON iterator.
-					//alternatively you can fetch whole document from the iterator: `e.ToBSONDocument()`
-					BSONDocument rdoc = e.ToBSONDocument("name", "likes.0");	
+					//alternatively you can fetch whole document from the iterator: `e.ToBsonDocument()`
+					BsonDocument rdoc = e.ToBsonDocument("name", "likes.0");	
 					Console.WriteLine(string.Format("{0} likes the '{1}'", rdoc["name"], rdoc["likes.0"]));
 				}
 			}
 			q.Dispose();
 			jb.Dispose();
-            Console.ReadKey();
+			
+			Console.ReadKey();
 		}
 	}
 }

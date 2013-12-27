@@ -15,9 +15,6 @@
 // ============================================================================================
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using Ejdb.DB;
-using Ejdb.Tests;
 
 namespace Ejdb.BSON {
 
@@ -39,7 +36,7 @@ namespace Ejdb.BSON {
 		public object Value { get; internal set; }
 
 	    public BsonValue(BsonType type, object value) 
-        {
+	  {
 			BSONType = type;
 			Value = value;
 		}
@@ -47,25 +44,25 @@ namespace Ejdb.BSON {
 		public BsonValue(BsonType type) : this(type, null) {
 		}
 
-		public override bool Equals(object obj) {
-			if (obj == null) {
+		public override bool Equals(object obj) 
+		{
+			if (obj == null) 
 				return false;
-			}
-			if (ReferenceEquals(this, obj)) {
+			
+			if (ReferenceEquals(this, obj)) 
 				return true;
-			}
-			if (obj.GetType() != typeof(BsonValue)) {
+			
+			if (obj.GetType() != typeof(BsonValue))
 				return false;
-			}
+			
 			BsonValue other = (BsonValue) obj;
-			if (BSONType != other.BSONType) {
+			if (BSONType != other.BSONType) 
 				return false;
-			}
-			if (Value != null) {
+			
+			if (Value != null) 
 				return Value.Equals(other.Value);
-			} else {
-				return (Value == other.Value);
-			}
+			
+			return (Value == other.Value);
 		}
 
 		public static bool operator ==(BsonValue v1, BsonValue v2) {
@@ -78,11 +75,13 @@ namespace Ejdb.BSON {
 			return v1.Equals(v2);
 		}
 
-		public static bool operator !=(BsonValue v1, BsonValue v2) {
+		public static bool operator !=(BsonValue v1, BsonValue v2) 
+		{
 			return !(v1 == v2);
 		}
 
-		public override int GetHashCode() {
+		public override int GetHashCode() 
+		{
 			unchecked {
 				return BSONType.GetHashCode() ^ (Value != null ? Value.GetHashCode() : 0);
 			}
@@ -92,188 +91,189 @@ namespace Ejdb.BSON {
 			return String.Format("[BsonValue: BsonType={0}, Value={1}]", BSONType, Value);
 		}
 
-        public string ToStringWithKey(string key)
-        {
-            return String.Format("[BsonValue: BsonType={0}, Key={1}, Value={2}]", BSONType, key, Value);
-        }
+		public string ToStringWithKey(string key)
+		{
+		return String.Format("[BsonValue: BsonType={0}, Key={1}, Value={2}]", BSONType, key, Value);
+		}
 
-		public object Clone() {
+		public object Clone() 
+		{
 			return new BsonValue(this.BSONType, this.Value);
 		}
 
-        public static BsonValue ValueOf(object v)
-        {
-            if (v == null)
-                return GetNull();
+		  public static BsonValue ValueOf(object v)
+		  {
+			if (v == null)
+				return GetNull();
 
-            var arrayValue = v as Array;
-            if (arrayValue != null)
-                return Create(new BsonArray(arrayValue));
+			var arrayValue = v as Array;
+			if (arrayValue != null)
+				return Create(new BsonArray(arrayValue));
 
-            Func<object, BsonValue> setter;
-            var vtype = v.GetType();
-            TYPE_SETTERS.TryGetValue(vtype, out setter);
+			Func<object, BsonValue> setter;
+			var vtype = v.GetType();
+			TYPE_SETTERS.TryGetValue(vtype, out setter);
 
-            if (setter == null)
-                setter = GetValueForCustomClassObject;
+			if (setter == null)
+				setter = GetValueForCustomClassObject;
 
-            var bsonValue = setter(v);
-            return bsonValue;
-        }
+			var bsonValue = setter(v);
+			return bsonValue;
+		  }
 
-	    public static BsonDocument GetDocumentForCustomClassObject(object val)
-	    {
-	        var type = val.GetType();
-	        if ((type.IsClass || (type.IsValueType && !type.IsPrimitive)) &&
-	            !typeof (Array).IsAssignableFrom(type) &&
-	            !typeof (Enum).IsAssignableFrom(type))
-	        {
-	            var bsonDocument = new BsonDocument();
-	            var classMap = BsonClassSerialization.LookupClassMap(type);
-	            foreach (var member in classMap.AllMemberMaps)
-	            {
-	                var value = member.Getter(val);
-	                bsonDocument.Add(member.ElementName, value);
-	            }
+		public static BsonDocument GetDocumentForCustomClassObject(object val)
+		{
+			var type = val.GetType();
+			if ((type.IsClass || (type.IsValueType && !type.IsPrimitive)) &&
+				!typeof (Array).IsAssignableFrom(type) &&
+				!typeof (Enum).IsAssignableFrom(type))
+			{
+				var bsonDocument = new BsonDocument();
+				var classMap = BsonClassSerialization.LookupClassMap(type);
+				foreach (var member in classMap.AllMemberMaps)
+				{
+					var value = member.Getter(val);
+					bsonDocument.Add(member.ElementName, value);
+				}
 
-	            return bsonDocument;
-	        }
+				return bsonDocument;
+			}
 
-	        throw new Exception(string.Format("Type '{0}' not supported for custom class serialization", type.FullName));
-	    }
+			throw new Exception(string.Format("Type '{0}' not supported for custom class serialization", type.FullName));
+		}
 
-	    public static BsonValue GetValueForCustomClassObject(object val)
-	    {
-	        return Create(GetDocumentForCustomClassObject(val));
-	    }
+		public static BsonValue GetValueForCustomClassObject(object val)
+		{
+			return Create(GetDocumentForCustomClassObject(val));
+		}
 
-	    public static BsonValue GetNull() 
-	    {
-	        return new BsonValue(BsonType.NULL);
-	    }
+		public static BsonValue GetNull() 
+		{
+			return new BsonValue(BsonType.NULL);
+		}
 
-	    public static BsonValue GetUndefined()
-	    {
-	        return new BsonValue(BsonType.UNKNOWN);
-	    }
+		public static BsonValue GetUndefined()
+		{
+			return new BsonValue(BsonType.UNKNOWN);
+		}
 
-	    public static BsonValue GetMaxKey()
-	    {
-	        return new BsonValue(BsonType.MAXKEY);
-	    }
+		public static BsonValue GetMaxKey()
+		{
+			return new BsonValue(BsonType.MAXKEY);
+		}
 
-	    public static BsonValue GetMinKey()
-	    {
-	        return new BsonValue(BsonType.MINKEY);
-	    }
+		public static BsonValue GetMinKey()
+		{
+			return new BsonValue(BsonType.MINKEY);
+		}
 
-        public static BsonValue Create(BsonOid oid)
-	    {
-	        return new BsonValue(BsonType.OID, oid);
-	    }
+		public static BsonValue Create(BsonOid oid)
+		{
+			return new BsonValue(BsonType.OID, oid);
+		}
 
-	    public static BsonValue Create(bool val)
-	    {
-	        return new BsonValue(BsonType.BOOL, val);
-	    }
+		public static BsonValue Create(bool val)
+		{
+			return new BsonValue(BsonType.BOOL, val);
+		}
 
-	    public static BsonValue Create(int val)
-	    {
-	        return new BsonValue(BsonType.INT, val);
-	    }
+		public static BsonValue Create(int val)
+		{
+			return new BsonValue(BsonType.INT, val);
+		}
 
-	    public static BsonValue Create(long val)
-	    {
-	        return new BsonValue(BsonType.LONG, val);
-	    }
+		public static BsonValue Create(long val)
+		{
+			return new BsonValue(BsonType.LONG, val);
+		}
 
-	    public static BsonValue Create(double val)
-	    {
-	        return new BsonValue(BsonType.DOUBLE, val);
-	    }
+		public static BsonValue Create(double val)
+		{
+			return new BsonValue(BsonType.DOUBLE, val);
+		}
 
-	    public static BsonValue Create(float val)
-	    {
-	        return new BsonValue(BsonType.DOUBLE, val);
-	    }
+		public static BsonValue Create(float val)
+		{
+			return new BsonValue(BsonType.DOUBLE, val);
+		}
 
-	    public static BsonValue Create(string val)
-	    {
-	        return new BsonValue(BsonType.STRING, val);
-	    }
+		public static BsonValue Create(string val)
+		{
+			return new BsonValue(BsonType.STRING, val);
+		}
 
-	    public static BsonValue CreateCode(string val)
-	    {
-	        return new BsonValue(BsonType.CODE, val);
-	    }
+		public static BsonValue CreateCode(string val)
+		{
+			return new BsonValue(BsonType.CODE, val);
+		}
 
-	    public static BsonValue CreateSymbol(string val)
-	    {
-	        return new BsonValue(BsonType.SYMBOL, val);
-	    }
+		public static BsonValue CreateSymbol(string val)
+		{
+			return new BsonValue(BsonType.SYMBOL, val);
+		}
 
-	    public static BsonValue Create(DateTime val)
-	    {
-	        return new BsonValue(BsonType.DATE, val);
-	    }
+		public static BsonValue Create(DateTime val)
+		{
+			return new BsonValue(BsonType.DATE, val);
+		}
 
-	    public static BsonValue GetRegexp(BsonRegexp val)
-	    {
-	        return new BsonValue(BsonType.REGEX, val);
-	    }
+		public static BsonValue GetRegexp(BsonRegexp val)
+		{
+			return new BsonValue(BsonType.REGEX, val);
+		}
 
-	    public static BsonValue GetBinData(BsonBinData val)
-	    {
-	        return new BsonValue(BsonType.BINDATA, val);
-	    }
+		public static BsonValue GetBinData(BsonBinData val)
+		{
+			return new BsonValue(BsonType.BINDATA, val);
+		}
 
-	    public static BsonValue Create(BsonDocument val) 
-        {
-	        return new BsonValue(BsonType.OBJECT, val);
-	    }
+		public static BsonValue Create(BsonDocument val) 
+		{
+			return new BsonValue(BsonType.OBJECT, val);
+		}
 
-	    public static BsonValue Create(BsonArray val)
-	    {
-	        return new BsonValue(BsonType.ARRAY, val);
-	    }
+		public static BsonValue Create(BsonArray val)
+		{
+			return new BsonValue(BsonType.ARRAY, val);
+		}
 
-	    public static BsonValue Create(BsonTimestamp val)
-	    {
-	        return new BsonValue(BsonType.TIMESTAMP, val);
-	    }
+		public static BsonValue Create(BsonTimestamp val)
+		{
+			return new BsonValue(BsonType.TIMESTAMP, val);
+		}
 
-	    public static BsonValue Create(BsonCodeWScope val)
-	    {
-	        return new BsonValue(BsonType.CODEWSCOPE, val);
-	    }
+		public static BsonValue Create(BsonCodeWScope val)
+		{
+			return new BsonValue(BsonType.CODEWSCOPE, val);
+		}
 
-	    private static Dictionary<Type, Func<object, BsonValue>> TYPE_SETTERS =  new Dictionary<Type, Func<object, BsonValue>> 
-	    {
-	        {typeof(bool), v => Create((bool) v)},
-	        {typeof(byte), v => Create((int) v)},
-	        {typeof(sbyte), v => Create((int) v)},
-	        {typeof(ushort), v => Create((int) v)},
-	        {typeof(short), v => Create((int) v)},
-	        {typeof(uint), v => Create((int) v)},
-	        {typeof(int), v => Create((int) v)},
-	        {typeof(ulong), v => Create((long) v)},
-	        {typeof(long), v => Create((long) v)},
-	        {typeof(float), v => Create((float) v)},
-	        {typeof(double), v => Create((double) v)},
-	        {typeof(char), v => Create(v.ToString())},
-	        {typeof(string), v => Create((string) v)},
-	        {typeof(BsonOid), v => Create((BsonOid) v)},
-	        {typeof(BsonRegexp), v => GetRegexp((BsonRegexp) v)},
-	        {typeof(BsonValue), v => (BsonValue) v},
-	        {typeof(BsonTimestamp), v => Create((BsonTimestamp) v)},
-	        {typeof(BsonCodeWScope), v => Create((BsonCodeWScope) v)},
-	        {typeof(BsonBinData), v => GetBinData((BsonBinData) v)},
-	        {typeof(BsonDocument), v => Create((BsonDocument) v)},
-	        {typeof(BsonArray), v => Create((BsonArray) v)},
-	        {typeof(DateTime), v => Create((DateTime) v)},
-	        {typeof(BsonUndefined), v => GetUndefined()},
-	        {typeof(BsonNull), v => GetNull() },
-	    };
+		private static Dictionary<Type, Func<object, BsonValue>> TYPE_SETTERS =  new Dictionary<Type, Func<object, BsonValue>> 
+		{
+			{typeof(bool), v => Create((bool) v)},
+			{typeof(byte), v => Create((int) v)},
+			{typeof(sbyte), v => Create((int) v)},
+			{typeof(ushort), v => Create((int) v)},
+			{typeof(short), v => Create((int) v)},
+			{typeof(uint), v => Create((int) v)},
+			{typeof(int), v => Create((int) v)},
+			{typeof(ulong), v => Create((long) v)},
+			{typeof(long), v => Create((long) v)},
+			{typeof(float), v => Create((float) v)},
+			{typeof(double), v => Create((double) v)},
+			{typeof(char), v => Create(v.ToString())},
+			{typeof(string), v => Create((string) v)},
+			{typeof(BsonOid), v => Create((BsonOid) v)},
+			{typeof(BsonRegexp), v => GetRegexp((BsonRegexp) v)},
+			{typeof(BsonValue), v => (BsonValue) v},
+			{typeof(BsonTimestamp), v => Create((BsonTimestamp) v)},
+			{typeof(BsonCodeWScope), v => Create((BsonCodeWScope) v)},
+			{typeof(BsonBinData), v => GetBinData((BsonBinData) v)},
+			{typeof(BsonDocument), v => Create((BsonDocument) v)},
+			{typeof(BsonArray), v => Create((BsonArray) v)},
+			{typeof(DateTime), v => Create((DateTime) v)},
+			{typeof(BsonUndefined), v => GetUndefined()},
+			{typeof(BsonNull), v => GetNull() },
+		};
 	}
 }
 
