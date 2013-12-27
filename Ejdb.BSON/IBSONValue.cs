@@ -19,12 +19,12 @@ namespace Ejdb.BSON {
 	/// <summary>
 	/// Base interface of any BSON complex values like Regexp or BSON Timestamp.
 	/// </summary>
-	public interface IBSONValue {
+	public interface IBsonValue {
 
 		/// <summary>
 		/// BSON Type of complex value.
 		/// </summary>
 		/// <value>The type of the BSON.</value>
-		BSONType BSONType { get; }
+		BsonType BSONType { get; }
 	}
 }

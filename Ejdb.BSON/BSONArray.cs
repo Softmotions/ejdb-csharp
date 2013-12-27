@@ -19,11 +19,11 @@ using System.IO;
 namespace Ejdb.BSON {
 
 	[Serializable]
-	public class BSONArray : BSONDocument {
+	public class BsonArray : BsonDocument {
 
-		public override BSONType BSONType {
+		public override BsonType BSONType {
 			get {
-				return BSONType.ARRAY;
+				return BsonType.ARRAY;
 			}
 		}
 
@@ -33,124 +33,124 @@ namespace Ejdb.BSON {
 			}
 		}
 
-		public BSONArray() {
+		public BsonArray() {
 		}
 
-        public BSONArray(BSONUndefined[] arr) {
+        public BsonArray(BsonUndefined[] arr) {
 			for (var i = 0; i < arr.Length; ++i) {
 				SetUndefined(i);
 			}
 		}
 
-		public BSONArray(BSONull[] arr) {
+		public BsonArray(BsonNull[] arr) {
 			for (var i = 0; i < arr.Length; ++i) {
 				SetNull(i);
 			}
 		}
 
-	    public BSONArray(ushort[] arr)
+	    public BsonArray(ushort[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetNumber(i, arr[i]);
 	    }
 
-	    public BSONArray(uint[] arr)
+	    public BsonArray(uint[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetNumber(i, arr[i]);
 	    }
 
-	    public BSONArray(ulong[] arr)
+	    public BsonArray(ulong[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetNumber(i, (long) arr[i]);
 	    }
 
-	    public BSONArray(short[] arr)
+	    public BsonArray(short[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetNumber(i, arr[i]);
 	    }
 
-	    public BSONArray(string[] arr)
+	    public BsonArray(string[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetString(i, arr[i]);
 	    }
 
-	    public BSONArray(int[] arr)
+	    public BsonArray(int[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetNumber(i, arr[i]);
 	    }
 
-	    public BSONArray(long[] arr)
+	    public BsonArray(long[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetNumber(i, arr[i]);
 	    }
 
-	    public BSONArray(float[] arr)
+	    public BsonArray(float[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetNumber(i, arr[i]);
 	    }
 
-	    public BSONArray(double[] arr)
+	    public BsonArray(double[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetNumber(i, arr[i]);
 	    }
 
-	    public BSONArray(bool[] arr)
+	    public BsonArray(bool[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetBool(i, arr[i]);
 	    }
 
-	    public BSONArray(BSONOid[] arr)
+	    public BsonArray(BsonOid[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetOID(i, arr[i]);
 	    }
 
-	    public BSONArray(DateTime[] arr)
+	    public BsonArray(DateTime[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetDate(i, arr[i]);
 	    }
 
-	    public BSONArray(BSONDocument[] arr)
+	    public BsonArray(BsonDocument[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetObject(i, arr[i]);
 	    }
 
-	    public BSONArray(BSONArray[] arr)
+	    public BsonArray(BsonArray[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetArray(i, arr[i]);
 	    }
 
-	    public BSONArray(BSONRegexp[] arr)
+	    public BsonArray(BsonRegexp[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetRegexp(i, arr[i]);
 	    }
 
-	    public BSONArray(BSONTimestamp[] arr)
+	    public BsonArray(BsonTimestamp[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetTimestamp(i, arr[i]);
 	    }
 
-	    public BSONArray(BSONCodeWScope[] arr)
+	    public BsonArray(BsonCodeWScope[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetCodeWScope(i, arr[i]);
 	    }
 
-	    public BSONArray(BSONBinData[] arr)
+	    public BsonArray(BsonBinData[] arr)
 	    {
 	        for (int i = 0; i < arr.Length; ++i)
 	            SetBinData(i, arr[i]);
@@ -158,112 +158,112 @@ namespace Ejdb.BSON {
 
 		public void SetNull(int idx)
 		{
-		    _SetValue(idx, BSONValue.GetNull());
+		    _SetValue(idx, BsonValue.GetNull());
 		}
 
         public void SetUndefined(int idx)
 		{
-		    _SetValue(idx, BSONValue.GetUndefined());
+		    _SetValue(idx, BsonValue.GetUndefined());
 		}
 
 		public void SetMaxKey(int idx)
 		{
-		    _SetValue(idx, BSONValue.GetMaxKey());
+		    _SetValue(idx, BsonValue.GetMaxKey());
 		}
 
 		public void SetMinKey(int idx)
 		{
-            _SetValue(idx, BSONValue.GetMinKey());
+            _SetValue(idx, BsonValue.GetMinKey());
 		}
 
 	    public void SetOID(int idx, string oid)
 	    {
-            _SetValue(idx, BSONValue.GetOID(oid));
+            _SetValue(idx, BsonValue.GetOID(oid));
 	    }
 
-	    public void SetOID(int idx, BSONOid oid)
+	    public void SetOID(int idx, BsonOid oid)
 	    {
-            _SetValue(idx, BSONValue.GetOID(oid));
+            _SetValue(idx, BsonValue.GetOID(oid));
 	    }
 
 	    public void SetBool(int idx, bool val)
 	    {
-	        _SetValue(idx, BSONValue.GetBool(val));
+	        _SetValue(idx, BsonValue.GetBool(val));
 	    }
 
 	    public void SetNumber(int idx, int val)
 	    {
-            _SetValue(idx, BSONValue.GetNumber(val));
+            _SetValue(idx, BsonValue.GetNumber(val));
 	    }
 
 	    public void SetNumber(int idx, long val)
 	    {
-            _SetValue(idx, BSONValue.GetNumber(val));
+            _SetValue(idx, BsonValue.GetNumber(val));
 	    }
 
 	    public void SetNumber(int idx, double val)
 	    {
-            _SetValue(idx, BSONValue.GetNumber(val));
+            _SetValue(idx, BsonValue.GetNumber(val));
 	    }
 
 	    public void SetNumber(int idx, float val)
 	    {
-            _SetValue(idx, BSONValue.GetNumber(val));
+            _SetValue(idx, BsonValue.GetNumber(val));
 	    }
 
 	    public void SetString(int idx, string val)
 	    {
-            _SetValue(idx, BSONValue.GetString(val));
+            _SetValue(idx, BsonValue.GetString(val));
 	    }
 
 	    public void SetCode(int idx, string val)
 	    {
-            _SetValue(idx, BSONValue.GetCode(val));
+            _SetValue(idx, BsonValue.GetCode(val));
 	    }
 
 	    public void SetSymbol(int idx, string val)
 	    {
-            _SetValue(idx, BSONValue.GetSymbol(val));
+            _SetValue(idx, BsonValue.GetSymbol(val));
 	    }
 
 	    public void SetDate(int idx, DateTime val)
 	    {
-            _SetValue(idx, BSONValue.GetDate(val));
+            _SetValue(idx, BsonValue.GetDate(val));
 	    }
 
-		public void SetRegexp(int idx, BSONRegexp val) 
+		public void SetRegexp(int idx, BsonRegexp val) 
         {
-            _SetValue(idx, BSONValue.GetRegexp(val));
+            _SetValue(idx, BsonValue.GetRegexp(val));
 		}
 
-		public void SetBinData(int idx, BSONBinData val) 
+		public void SetBinData(int idx, BsonBinData val) 
         {
-            _SetValue(idx, BSONValue.GetBinData(val));
+            _SetValue(idx, BsonValue.GetBinData(val));
 		}
 
-		public void SetObject(int idx, BSONDocument val) 
+		public void SetObject(int idx, BsonDocument val) 
         {
-            _SetValue(idx, BSONValue.GetDocument(val));
+            _SetValue(idx, BsonValue.GetDocument(val));
 		}
 
-		public void SetArray(int idx, BSONArray val) 
+		public void SetArray(int idx, BsonArray val) 
         {
-            _SetValue(idx, BSONValue.GetArray(val));
+            _SetValue(idx, BsonValue.GetArray(val));
 		}
 
-		public void SetTimestamp(int idx, BSONTimestamp val) 
+		public void SetTimestamp(int idx, BsonTimestamp val) 
         {
-            _SetValue(idx, BSONValue.GetTimestamp(val));
+            _SetValue(idx, BsonValue.GetTimestamp(val));
 		}
 
-		public void SetCodeWScope(int idx, BSONCodeWScope val) 
+		public void SetCodeWScope(int idx, BsonCodeWScope val) 
         {
-            _SetValue(idx, BSONValue.GetCodeWScope(val));
+            _SetValue(idx, BsonValue.GetCodeWScope(val));
 		}
 
-        private void _SetValue(int idx, BSONValue val)
+        private void _SetValue(int idx, BsonValue val)
         {
-            SetBSONValueNew(idx.ToString(), val);
+            Add(idx.ToString(), val);
         }
 
 

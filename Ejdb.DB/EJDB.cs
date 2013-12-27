@@ -352,7 +352,7 @@ namespace Ejdb.DB {
 		/// Gets info of EJDB database itself and its collections.
 		/// </summary>
 		/// <value>The DB meta.</value>
-		public BSONDocument DBMeta {
+		public BsonDocument DBMeta {
 			get {
 				CheckDisposed(true);
 				//internal static extern IntPtr _ejdbmeta([In] IntPtr db);
@@ -365,7 +365,7 @@ namespace Ejdb.DB {
 					IntPtr bsdataptr = _bson_data2(bsptr, out size);
 					byte[] bsdata = new byte[size];
 					Marshal.Copy(bsdataptr, bsdata, 0, bsdata.Length);
-					return new BSONDocument(bsdata);
+					return new BsonDocument(bsdata);
 				} finally {
 					_bson_del(bsptr);
 				}
@@ -799,11 +799,11 @@ namespace Ejdb.DB {
 			return rv;
 		}
 
-        public static BSONOid GenerateId()
+        public static BsonOid GenerateId()
         {
             byte[] oiddata = new byte[12];
             _bson_oid_gen(oiddata);
-            return new BSONOid(oiddata);
+            return new BsonOid(oiddata);
         }
 
 		public bool Save(string cname, params object[] docs) {
@@ -817,7 +817,7 @@ namespace Ejdb.DB {
 				}
 			}
 			foreach (var doc in docs) {
-				if (!Save(cptr, BSONDocument.ValueOf(doc), false)) {
+				if (!Save(cptr, BsonDocument.ValueOf(doc), false)) {
 					if (_throwonfail) {
 						throw new EJDBException(this);
 					} else {
@@ -866,7 +866,7 @@ namespace Ejdb.DB {
 		/// </remarks>
 		/// <param name="cmd">Command object</param>
 		/// <returns>Command response.</returns>
-		public BSONDocument Command(BSONDocument cmd) {
+		public BsonDocument Command(BsonDocument cmd) {
 			CheckDisposed();
 			byte[] cmdata = cmd.ToByteArray();
 			//internal static extern IntPtr _ejdbcommand([In] IntPtr db, [In] byte[] cmd);
@@ -878,8 +878,8 @@ namespace Ejdb.DB {
 			if (bsdata.Length == 0) {
 				return null;
 			}
-			BSONIterator it = new BSONIterator(bsdata);
-			return it.ToBSONDocument();
+			BsonIterator it = new BsonIterator(bsdata);
+			return it.ToBsonDocument();
 		}
 
 		/// <summary>
@@ -888,7 +888,7 @@ namespace Ejdb.DB {
 		/// <param name="cname">Name of collection.</param>
 		/// <param name="docs">BSON documents to save.</param>
 		/// <returns>True on success.</returns>
-		public bool Save(string cname, params BSONDocument[] docs) {
+		public bool Save(string cname, params BsonDocument[] docs) {
 			CheckDisposed();
 			IntPtr cptr = _ejdbcreatecoll(_db, cname, null);
 			if (cptr == IntPtr.Zero) {
@@ -917,7 +917,7 @@ namespace Ejdb.DB {
 		/// <param name="cname">Name of collection.</param>
 		/// <param name="docs">BSON documents to save.</param>
 		/// <returns>True on success.</returns>
-		public bool SaveMerge(string cname, params BSONDocument[] docs) {
+		public bool SaveMerge(string cname, params BsonDocument[] docs) {
 			CheckDisposed();
 			IntPtr cptr = _ejdbcreatecoll(_db, cname, null);
 			if (cptr == IntPtr.Zero) {
@@ -939,15 +939,15 @@ namespace Ejdb.DB {
 			return true;
 		}
 
-		bool Save(IntPtr cptr, BSONDocument doc, bool merge) {
+		bool Save(IntPtr cptr, BsonDocument doc, bool merge) {
 			bool rv;
-			BSONValue bv = doc.GetBSONValue("_id");
+            BsonValue bv = doc.GetBsonValue(BsonConstants.Id);
 			byte[] bsdata = doc.ToByteArray();
 			byte[] oiddata = new byte[12];
 			//static extern bool _ejdbsavebson([In] IntPtr coll, [In] byte[] bsdata, [Out] byte[] oid, bool merge);
 			rv = _ejdbsavebson(cptr, bsdata, oiddata, merge);
 			if (rv && bv == null) {
-				doc.SetBSONValueNew("_id", BSONValue.GetOID(new BSONOid(oiddata)));
+                doc.Add(BsonConstants.Id, BsonValue.GetOID(new BsonOid(oiddata)));
 			}
 			if (_throwonfail && !rv) {
 				throw new EJDBException(this);
@@ -963,7 +963,7 @@ namespace Ejdb.DB {
 		/// </remarks>
 		/// <param name="cname">Cname.</param>
 		/// <param name="oid">Oid.</param>
-		public BSONIterator Load(string cname, BSONOid oid) {
+		public BsonIterator Load(string cname, BsonOid oid) {
 			CheckDisposed();
 			IntPtr cptr = _ejdbgetcoll(_db, cname);
 			if (cptr == IntPtr.Zero) {
@@ -974,7 +974,7 @@ namespace Ejdb.DB {
 			if (bsdata.Length == 0) {
 				return null;
 			}
-			return new BSONIterator(bsdata);
+			return new BsonIterator(bsdata);
 		}
 
 		/// <summary>
@@ -982,7 +982,7 @@ namespace Ejdb.DB {
 		/// </summary>
 		/// <param name="cname">Name of collection.</param>
 		/// <param name="oids">Object identifiers.</param>
-		public bool Remove(string cname, params BSONOid[] oids) {
+		public bool Remove(string cname, params BsonOid[] oids) {
 			CheckDisposed();
 			IntPtr cptr = _ejdbgetcoll(_db, cname);
 			if (cptr == IntPtr.Zero) {
@@ -1009,12 +1009,12 @@ namespace Ejdb.DB {
 		/// <param name="defaultcollection">Name of the collection used by default.</param>
 		public EJDBQuery CreateQuery(object qv = null, string defaultcollection = null) {
 			CheckDisposed();
-			return new EJDBQuery(this, BSONDocument.ValueOf(qv), defaultcollection);
+			return new EJDBQuery(this, BsonDocument.ValueOf(qv), defaultcollection);
 		}
 
 		public EJDBQuery CreateQueryFor(string defaultcollection) {
 			CheckDisposed();
-			return new EJDBQuery(this, new BSONDocument(), defaultcollection);
+			return new EJDBQuery(this, new BsonDocument(), defaultcollection);
 		}
 
         public EJDBQCursor Find(string collection, IQuery query)
@@ -1024,12 +1024,12 @@ namespace Ejdb.DB {
         }
 
 		/// <summary>
-		/// Convert JSON string into BSONDocument.
+		/// Convert JSON string into BsonDocument.
 		/// Returns `null` if conversion failed.
 		/// </summary>
-		/// <returns>The BSONDocument instance on success.</returns>
+		/// <returns>The BsonDocument instance on success.</returns>
 		/// <param name="json">JSON string</param>
-		public BSONDocument Json2Bson(string json) {
+		public BsonDocument Json2Bson(string json) {
 			IntPtr bsonret = _json2bson(json);
 			if (bsonret == IntPtr.Zero) {
 				return null;
@@ -1038,8 +1038,8 @@ namespace Ejdb.DB {
 			if (bsdata.Length == 0) {
 				return null;
 			}
-			BSONIterator it = new BSONIterator(bsdata);
-			return it.ToBSONDocument();
+			BsonIterator it = new BsonIterator(bsdata);
+			return it.ToBsonDocument();
 		}
 
 		//.//////////////////////////////////////////////////////////////////

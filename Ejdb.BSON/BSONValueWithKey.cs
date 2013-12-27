@@ -2,18 +2,18 @@
 //  
 namespace Ejdb.BSON
 {
-    public class BSONValueWithKey
+    public class BsonValueWithKey
     {
-        public BSONValueWithKey(string key, BSONValue value, BSONType type)
+        public BsonValueWithKey(string key, BsonValue value, BsonType type)
         {
             Value = value.Value;
-            BSONType = type;
+            BsonType = type;
             Key = key;
         }
 
         public object Value { get; private set; }
 
-        public BSONType BSONType { get; set; }
+        public BsonType BsonType { get; set; }
 
         public string Key { get; private set; }
         

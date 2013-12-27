@@ -18,13 +18,13 @@ using System;
 namespace Ejdb.BSON {
 
 	[Serializable]
-	public sealed class BSONCodeWScope : BSONDocument {
+	public sealed class BsonCodeWScope : BsonDocument {
 
 		readonly string _code;
 
-		public override BSONType BSONType {
+		public override BsonType BSONType {
 			get {
-				return BSONType.CODEWSCOPE;
+				return BsonType.CODEWSCOPE;
 			}
 		}
 
@@ -34,13 +34,13 @@ namespace Ejdb.BSON {
 			}
 		}
 
-		public BSONDocument Scope {
+		public BsonDocument Scope {
 			get {
 				return this;
 			}
 		}
 
-		public BSONCodeWScope(string code) {
+		public BsonCodeWScope(string code) {
 			this._code = code;
 		}
 
@@ -51,10 +51,10 @@ namespace Ejdb.BSON {
 			if (ReferenceEquals(this, obj)) {
 				return true;
 			}
-			if (!(obj is BSONCodeWScope)) {
+			if (!(obj is BsonCodeWScope)) {
 				return false;
 			}
-			BSONCodeWScope cw = (BSONCodeWScope) obj;
+			BsonCodeWScope cw = (BsonCodeWScope) obj;
 			if (_code != cw._code) {
 				return false;
 			}

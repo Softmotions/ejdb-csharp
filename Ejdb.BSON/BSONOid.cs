@@ -19,40 +19,40 @@ using System.IO;
 namespace Ejdb.BSON {
 
 	[Serializable]
-	public sealed class BSONOid : IComparable<BSONOid>, IBSONValue {
+	public sealed class BsonOid : IComparable<BsonOid>, IBsonValue {
 
 		internal byte[] _bytes;
 		string _cachedString;
 
-		public BSONType BSONType {
+		public BsonType BSONType {
 			get {
-				return BSONType.OID;
+				return BsonType.OID;
 			}
 		}
 
-        public static BSONOid Empty
+        public static BsonOid Empty
         {
             get
             {
-                var result = new BSONOid();
+                var result = new BsonOid();
                 result._bytes = new byte[12];
                 return result;
             }
         }
 
-		BSONOid() {
+		BsonOid() {
 		}
 
-		public BSONOid(string val) {
+		public BsonOid(string val) {
 			ParseOIDString(val);
 		}
 
-		public BSONOid(byte[] val) {
+		public BsonOid(byte[] val) {
 			_bytes = new byte[12];
 			Array.Copy(val, _bytes, 12);
 		}
 
-		public BSONOid(BinaryReader reader) {
+		public BsonOid(BinaryReader reader) {
 			_bytes = reader.ReadBytes(12);
 		}
 
@@ -76,7 +76,7 @@ namespace Ejdb.BSON {
 			}
 		}
 
-		public int CompareTo(BSONOid other) {
+		public int CompareTo(BsonOid other) {
 			if (ReferenceEquals(other, null)) {
 				return 1;
 			}
@@ -112,8 +112,8 @@ namespace Ejdb.BSON {
 			if (ReferenceEquals(this, obj)) {
 				return true;
 			}
-			if (obj is BSONOid) {
-				return (CompareTo((BSONOid) obj) == 0);
+			if (obj is BsonOid) {
+				return (CompareTo((BsonOid) obj) == 0);
 			}
 			return false;
 		}
@@ -122,7 +122,7 @@ namespace Ejdb.BSON {
 			return ToString().GetHashCode();
 		}
 
-		public static bool operator ==(BSONOid a, BSONOid b) {
+		public static bool operator ==(BsonOid a, BsonOid b) {
 			if (ReferenceEquals(a, b))
 				return true;
 			if ((object) a == null || (object) b == null) {
@@ -131,20 +131,20 @@ namespace Ejdb.BSON {
 			return a.Equals(b);
 		}
 
-		public static bool operator !=(BSONOid a, BSONOid b) {
+		public static bool operator !=(BsonOid a, BsonOid b) {
 			return !(a == b);
 		}
 
-		public static bool operator >(BSONOid a, BSONOid b) {
+		public static bool operator >(BsonOid a, BsonOid b) {
 			return a.CompareTo(b) > 0;
 		}
 
-		public static bool operator <(BSONOid a, BSONOid b) {
+		public static bool operator <(BsonOid a, BsonOid b) {
 			return a.CompareTo(b) < 0;
 		}
 
-		public static implicit operator BSONOid(string val) {
-			return new BSONOid(val);
+		public static implicit operator BsonOid(string val) {
+			return new BsonOid(val);
 		}
 	}
 }

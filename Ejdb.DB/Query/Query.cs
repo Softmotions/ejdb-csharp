@@ -8,11 +8,11 @@ namespace Ejdb.DB
 {
     public class Query : IQuery
     {
-        private readonly BSONDocument mQueryDocument;
+        private readonly BsonDocument mQueryDocument;
 
         public Query(string fieldName, object query)
         {
-            mQueryDocument = new BSONDocument();
+            mQueryDocument = new BsonDocument();
             mQueryDocument[fieldName] = query;
         }
 
@@ -41,24 +41,9 @@ namespace Ejdb.DB
             return BinaryQuery("$lte", fieldName, value);
         }
 
-        public static IQuery In(string fieldName, params int[] comparisonValues)
+        public static IQuery In<T>(string fieldName, params T[] comparisonValues)
         {
-            return BinaryQuery("$in", fieldName, comparisonValues.ToArray());
-        }
-
-        public static IQuery In(string fieldName, params float[] comparisonValues)
-        {
-            return BinaryQuery("$in", fieldName, comparisonValues.ToArray());
-        }
-
-        public static IQuery In(string fieldName, params string[] comparisonValues)
-        {
-            return BinaryQuery("$in", fieldName, comparisonValues.ToArray());
-        }
-
-        public static IQuery In(string fieldName, params double[] comparisonValues)
-        {
-            return BinaryQuery("$in", fieldName, comparisonValues.ToArray());
+            return BinaryQuery("$in", fieldName, comparisonValues);
         }
 
         public static IQuery Not(string fieldName, object comparisonValue)
@@ -68,18 +53,18 @@ namespace Ejdb.DB
 
         public static IQuery Between<T>(string fieldName, T comparisonValue1, T comparisonValue2)
         {
-            var comparisonValues = new object[] { comparisonValue1, comparisonValue2 };
+            var comparisonValues = new T[] { comparisonValue1, comparisonValue2 };
             return BinaryQuery("$bt", fieldName, comparisonValues);
         }
 
         public static IQuery BinaryQuery(string queryOperation, string fieldName, object comparisonValue)
         {
-            var query1 = new BSONDocument();
+            var query1 = new BsonDocument();
             query1[queryOperation] = comparisonValue;
             return new Query(fieldName, query1);
         }
 
-        public BSONDocument GetQueryDocument()
+        public BsonDocument GetQueryDocument()
         {
             return mQueryDocument;
         }

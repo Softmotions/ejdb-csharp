@@ -27,33 +27,34 @@ namespace Ejdb.BSON {
 	/// BSON document deserialized data wrapper.
 	/// </summary>
 	[Serializable]
-    public class BSONDocument : IBSONValue, IEnumerable<BSONValueWithKey>, ICloneable
+    public class BsonDocument : IBsonValue, IEnumerable<BsonValueWithKey>, ICloneable
     {
 	    [NonSerializedAttribute]
-		Dictionary<string, BSONValue> _fields;
+		Dictionary<string, BsonValue> _fields;
 
 		[NonSerializedAttribute]
-		int? _cachedhash;
+		private int? _cachedhash;
 
 		/// <summary>
 		/// BSON Type this document. 
 		/// </summary>
 		/// <remarks>
-		/// Type can be either <see cref="Ejdb.BSON.BSONType.OBJECT"/> or <see cref="Ejdb.BSON.BSONType.ARRAY"/>
+		/// Type can be either <see cref="BsonType.OBJECT"/> or <see cref="BsonType.ARRAY"/>
 		/// </remarks>
 		/// <value>The type of the BSON.</value>
-		public virtual BSONType BSONType {
+		public virtual BsonType BSONType {
 			get { 
-				return BSONType.OBJECT;
+				return BsonType.OBJECT;
 			}
 		}
 
 		/// <summary>
 		/// Gets the document keys.
 		/// </summary>
-		public ICollection<string> Keys {
-			get {
-				CheckFields();
+		public ICollection<string> Keys 
+        {
+			get 
+            {
 				return _fields.Keys;
 			}
 		}
@@ -67,29 +68,29 @@ namespace Ejdb.BSON {
 			}
 		}
 
-		public BSONDocument() {
-            _fields = new Dictionary<string, BSONValue>();
+		public BsonDocument() {
+            _fields = new Dictionary<string, BsonValue>();
 		}
 
-		public BSONDocument(BSONIterator it) : this() {
-			while (it.Next() != BSONType.EOO)
+		public BsonDocument(BsonIterator it) : this() {
+			while (it.Next() != BsonType.EOO)
 			{
 			    var value = it.FetchCurrentValue();
 			    Add(it.CurrentKey, value);
 			}
 		}
 
-		public BSONDocument(BSONIterator it, string[] fields) : this() {
+		public BsonDocument(BsonIterator it, string[] fields) : this() {
 			Array.Sort(fields);
-			BSONType bt;
+			BsonType bt;
 			int ind = -1;
 			int nfc = 0;
-			foreach (string f in fields) {
-				if (f != null) {
+			foreach (string f in fields) 
+            {
+				if (f != null) 
 					nfc++;
-				}
 			}
-			while ((bt = it.Next()) != BSONType.EOO) {
+			while ((bt = it.Next()) != BsonType.EOO) {
 				if (nfc < 1) {
 					continue;
 				}
@@ -98,7 +99,7 @@ namespace Ejdb.BSON {
 					Add(it.CurrentKey, it.FetchCurrentValue());
 					fields[ind] = null;
 					nfc--;
-				} else if (bt == BSONType.OBJECT || bt == BSONType.ARRAY) {
+				} else if (bt == BsonType.OBJECT || bt == BsonType.ARRAY) {
 					string[] narr = null;
 					for (var i = 0; i < fields.Length; ++i) {
 						var f = fields[i];
@@ -117,10 +118,10 @@ namespace Ejdb.BSON {
 						}
 					}
 					if (narr != null) {
-						BSONIterator nit = new BSONIterator(it);
-						BSONDocument ndoc = new BSONDocument(nit, narr);
+						BsonIterator nit = new BsonIterator(it);
+						BsonDocument ndoc = new BsonDocument(nit, narr);
 						if (ndoc.KeysCount > 0) {
-							Add(kk, new BSONValue(bt, ndoc));
+							Add(kk, new BsonValue(bt, ndoc));
 						}
 					}
 				}
@@ -128,32 +129,32 @@ namespace Ejdb.BSON {
 			it.Dispose();
 		}
 
-		public BSONDocument(byte[] bsdata) : this() {
-			using (BSONIterator it = new BSONIterator(bsdata)) {
-				while (it.Next() != BSONType.EOO) {
+		public BsonDocument(byte[] bsdata) : this() {
+			using (BsonIterator it = new BsonIterator(bsdata)) {
+				while (it.Next() != BsonType.EOO) {
 					Add(it.CurrentKey, it.FetchCurrentValue());
 				}
 			}
 		}
 
-		public BSONDocument(Stream bstream) : this() {
-			using (BSONIterator it = new BSONIterator(bstream)) {
-				while (it.Next() != BSONType.EOO) {
+		public BsonDocument(Stream bstream) : this() {
+			using (BsonIterator it = new BsonIterator(bstream)) {
+				while (it.Next() != BsonType.EOO) {
 					Add(it.CurrentKey, it.FetchCurrentValue());
 				}
 			}
 		}
 
-		public BSONDocument(BSONDocument doc) : this() {
+		public BsonDocument(BsonDocument doc) : this() {
 			foreach (var bv in doc._fields) {
-				Add(bv.Key, (BSONValue) bv.Value.Clone());
+				Add(bv.Key, (BsonValue) bv.Value.Clone());
 			}
 		}
 
-        public IEnumerator<BSONValueWithKey> GetEnumerator()
+        public IEnumerator<BsonValueWithKey> GetEnumerator()
         {
             foreach (var entry in _fields)
-                yield return new BSONValueWithKey(entry.Key, entry.Value, entry.Value.BSONType);
+                yield return new BsonValueWithKey(entry.Key, entry.Value, entry.Value.BSONType);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
@@ -166,7 +167,8 @@ namespace Ejdb.BSON {
 		/// <returns>The byte array.</returns>
 		public byte[] ToByteArray() {
 			byte[] res;
-			using (var ms = new MemoryStream()) {
+			using (var ms = new MemoryStream()) 
+            {
 				Serialize(ms);
 				res = ms.ToArray();
 			}
@@ -181,11 +183,10 @@ namespace Ejdb.BSON {
 		/// Gets the field value.
 		/// </summary>
 		/// <returns>The BSON value.</returns>
-		/// <see cref="Ejdb.BSON.BSONValue"/>
+		/// <see cref="BsonValue"/>
 		/// <param name="key">Document field name</param>
-		public BSONValue GetBSONValue(string key) {
-			CheckFields();
-			BSONValue ov;
+		public BsonValue GetBsonValue(string key) {
+		    BsonValue ov;
 			if (_fields.TryGetValue(key, out ov)) {
 				return ov;
 			} else {
@@ -200,9 +201,9 @@ namespace Ejdb.BSON {
 		/// Hierarchical field paths are NOT supported. Use <c>[]</c> operator instead.
 		/// </remarks>
 		/// <param name="key">BSON document key</param>
-		/// <see cref="Ejdb.BSON.BSONValue"/>
+		/// <see cref="BsonValue"/>
 		public object GetObjectValue(string key) {
-			var bv = GetBSONValue(key);
+			var bv = GetBsonValue(key);
 			return bv != null ? bv.Value : null;
 		}
 
@@ -212,18 +213,18 @@ namespace Ejdb.BSON {
 		/// <returns><c>true</c> if this document has the specified key; otherwise, <c>false</c>.</returns>
 		/// <param name="key">Key.</param>
 		public bool HasKey(string key) {
-			return (GetBSONValue(key) != null);
+			return (GetBsonValue(key) != null);
 		}
 
 		/// <summary>
-		/// Gets the <see cref="Ejdb.BSON.BSONDocument"/> with the specified key.
+		/// Gets the <see cref="BsonDocument"/> with the specified key.
 		/// </summary>
 		/// <remarks>
 		/// Getter for hierarchical field paths are supported.
 		/// </remarks>
 		/// <param name="key">Key.</param>
 		/// <returns>Key object </c> or <c>null</c> if the key is not exists or value type is either 
-		/// <see cref="Ejdb.BSON.BSONType.NULL"/> or <see cref="Ejdb.BSON.BSONType.UNDEFINED"/></returns>
+		/// <see cref="BsonType.NULL"/> or <see cref="BsonType.UNDEFINED"/></returns>
 		public object this[string key] {
 			get {
 				int ind;
@@ -231,7 +232,7 @@ namespace Ejdb.BSON {
 					return GetObjectValue(key);
 				} else {
 					string prefix = key.Substring(0, ind);
-					var doc = GetObjectValue(prefix) as BSONDocument;
+					var doc = GetObjectValue(prefix) as BsonDocument;
 					if (doc == null || key.Length < ind + 2) {
 						return null;
 					}
@@ -240,13 +241,13 @@ namespace Ejdb.BSON {
 			}
 			set
 			{
-                var bsonValue = BSONValue.ValueOf(value);
-			    SetBSONValueNew(key, bsonValue);
+                var bsonValue = BsonValue.ValueOf(value);
+			    Add(key, bsonValue);
 			}
 		}
 
-	    public BSONValue DropValue(string key) {
-			var bv = GetBSONValue(key);
+	    public BsonValue DropValue(string key) {
+			var bv = GetBsonValue(key);
 			if (bv == null) {
 				return bv;
 			}
@@ -264,29 +265,34 @@ namespace Ejdb.BSON {
 		}
 
 		public void Serialize(Stream os) {
-			if (os.CanSeek) {
+			if (os.CanSeek) 
+            {
 				long start = os.Position;
 				os.Position += 4; //skip int32 document size
-				using (var bw = new ExtBinaryWriter(os, Encoding.UTF8, true)) {
-					foreach (var bv in _fields) {
-						WriteBSONValue(bv.Key, bv.Value, bw);
-					}
+				using (var bw = new ExtBinaryWriter(os, Encoding.UTF8, true)) 
+                {
+					foreach (var bv in _fields) 
+						WriteBsonValue(bv.Key, bv.Value, bw);
+
 					bw.Write((byte) 0x00);
 					long end = os.Position;
 					os.Position = start;
 					bw.Write((int) (end - start));
 					os.Position = end; //go to the end
 				}
-			} else {
+			} else 
+            {
 				byte[] darr;
 				var ms = new MemoryStream();
-				using (var bw = new ExtBinaryWriter(ms)) {
-					foreach (var bv in _fields) {
-						WriteBSONValue(bv.Key, bv.Value, bw);
-					}
+				using (var bw = new ExtBinaryWriter(ms)) 
+                {
+					foreach (var bv in _fields) 
+						WriteBsonValue(bv.Key, bv.Value, bw);
+					
 					darr = ms.ToArray();
 				}	
-				using (var bw = new ExtBinaryWriter(os, Encoding.UTF8, true)) {
+				using (var bw = new ExtBinaryWriter(os, Encoding.UTF8, true)) 
+                {
 					bw.Write(darr.Length + 4/*doclen*/ + 1/*0x00*/);
 					bw.Write(darr);
 					bw.Write((byte) 0x00); 
@@ -302,16 +308,16 @@ namespace Ejdb.BSON {
 			if (ReferenceEquals(this, obj)) {
 				return true;
 			}
-			if (!(obj is BSONDocument)) {
+			if (!(obj is BsonDocument)) {
 				return false;
 			}
-			BSONDocument d1 = this;
-			BSONDocument d2 = ((BSONDocument) obj);
+			BsonDocument d1 = this;
+			BsonDocument d2 = ((BsonDocument) obj);
 			if (d1.KeysCount != d2.KeysCount) {
 				return false;
 			}
 			foreach (var bv1 in d1._fields) {
-				BSONValue bv2 = d2.GetBSONValue(bv1.Key);
+				BsonValue bv2 = d2.GetBsonValue(bv1.Key);
 				if (bv1.Value != bv2) {
 					return false;
 				}
@@ -320,10 +326,10 @@ namespace Ejdb.BSON {
 		}
 
 		public override int GetHashCode() {
-			if (_cachedhash != null) {
-				return (int) _cachedhash;
-			}
-			unchecked {
+		    if (_cachedhash != null)
+		        return (int) _cachedhash;
+
+		    unchecked {
 				int hash = 1;
 				foreach (var bv in _fields) {
 					hash = (hash * 31) + bv.Key.GetHashCode() + bv.Value.GetHashCode(); 
@@ -333,31 +339,31 @@ namespace Ejdb.BSON {
 			return (int) _cachedhash;
 		}
 
-		public static bool operator ==(BSONDocument d1, BSONDocument d2) {
+		public static bool operator ==(BsonDocument d1, BsonDocument d2) {
 			return Equals(d1, d2);
 		}
 
-		public static bool operator !=(BSONDocument d1, BSONDocument d2) {
+		public static bool operator !=(BsonDocument d1, BsonDocument d2) {
 			return !(d1 == d2);
 		}
 
-		public static BSONDocument ValueOf(object val) {
+		public static BsonDocument ValueOf(object val) {
 		    if (val == null)
-		        return new BSONDocument();
+		        return new BsonDocument();
 
 		    var vtype = val.GetType();
 
-		    if (val is BSONDocument)
-		        return (BSONDocument) val;
+		    if (val is BsonDocument)
+		        return (BsonDocument) val;
 
 		    if (vtype == typeof (byte[]))
-		        return new BSONDocument((byte[]) val);
+		        return new BsonDocument((byte[]) val);
 
-		    return BSONValue.GetAnonTypeDocument(val);
+		    return BsonValue.GetAnonTypeDocument(val);
 		}
 
 		public object Clone() {
-			return new BSONDocument(this);
+			return new BsonDocument(this);
 		}
 
 		public override string ToString() {
@@ -368,22 +374,14 @@ namespace Ejdb.BSON {
 		// 						Private staff										  
 		//.//////////////////////////////////////////////////////////////////
 
-        internal BSONDocument Add(string key, BSONValue bv)
+	    public BsonDocument Add(string key, BsonValue val)
         {
             _cachedhash = null;
-            _fields[key] = bv;
-            return this;
-        }
 
-	    internal BSONDocument SetBSONValueNew(string key, BSONValue val)
-        {
-            _cachedhash = null;
-            CheckFields();
+	        if (val.BSONType == BsonType.STRING && key == BsonConstants.Id)
+                val = new BsonValue(BsonType.OID, new BsonOid((string)val.Value));
 
-            if (val.BSONType == BSONType.STRING && key == "_id")
-                val = new BSONValue(BSONType.OID, new BSONOid((string)val.Value));
-
-            BSONValue ov;
+            BsonValue ov;
             if (_fields.TryGetValue(key, out ov))
             {
                 ov.BSONType = val.BSONType;
@@ -398,96 +396,97 @@ namespace Ejdb.BSON {
 	    protected virtual void CheckKey(string key) {
 		}
 
-        protected void WriteBSONValue(string key, BSONValue bv, ExtBinaryWriter bw) {
-            BSONType bt = bv.BSONType;
+        protected void WriteBsonValue(string key, BsonValue bv, ExtBinaryWriter bw) 
+        {
+            BsonType bt = bv.BSONType;
             switch (bt)
             {
-                case BSONType.EOO:
+                case BsonType.EOO:
                     break;
-                case BSONType.NULL:
-                case BSONType.UNDEFINED:
-                case BSONType.MAXKEY:
-                case BSONType.MINKEY:
+                case BsonType.NULL:
+                case BsonType.UNDEFINED:
+                case BsonType.MAXKEY:
+                case BsonType.MINKEY:
                     WriteTypeAndKey(key, bv, bw);
                     break;
-                case BSONType.OID:
+                case BsonType.OID:
                     {
                         WriteTypeAndKey(key, bv, bw);
-                        BSONOid oid = (BSONOid)bv.Value;
+                        BsonOid oid = (BsonOid)bv.Value;
                         Debug.Assert(oid._bytes.Length == 12);
                         bw.Write(oid._bytes);
                         break;
                     }
-                case BSONType.STRING:
-                case BSONType.CODE:
-                case BSONType.SYMBOL:
+                case BsonType.STRING:
+                case BsonType.CODE:
+                case BsonType.SYMBOL:
                     WriteTypeAndKey(key, bv, bw);
                     bw.WriteBSONString((string)bv.Value);
                     break;
-                case BSONType.BOOL:
+                case BsonType.BOOL:
                     WriteTypeAndKey(key, bv, bw);
                     bw.Write((bool)bv.Value);
                     break;
-                case BSONType.INT:
+                case BsonType.INT:
                     WriteTypeAndKey(key, bv, bw);
                     bw.Write((int)bv.Value);
                     break;
-                case BSONType.LONG:
+                case BsonType.LONG:
                     WriteTypeAndKey(key, bv, bw);
                     bw.Write((long)bv.Value);
                     break;
-                case BSONType.ARRAY:
-                case BSONType.OBJECT:
+                case BsonType.ARRAY:
+                case BsonType.OBJECT:
                     {
-                        BSONDocument doc = (BSONDocument)bv.Value;
+                        BsonDocument doc = (BsonDocument)bv.Value;
                         WriteTypeAndKey(key, bv, bw);
                         doc.Serialize(bw.BaseStream);
                         break;
                     }
-                case BSONType.DATE:
+                case BsonType.DATE:
                     {
                         DateTime dt = (DateTime)bv.Value;
-                        var diff = dt.ToLocalTime() - BSONConstants.Epoch;
+                        var diff = dt.ToLocalTime() - BsonConstants.Epoch;
                         long time = (long)Math.Floor(diff.TotalMilliseconds);
                         WriteTypeAndKey(key, bv, bw);
                         bw.Write(time);
                         break;
                     }
-                case BSONType.DOUBLE:
+                case BsonType.DOUBLE:
                     WriteTypeAndKey(key, bv, bw);
                     bw.Write((double)bv.Value);
                     break;
-                case BSONType.REGEX:
+                case BsonType.REGEX:
                     {
-                        BSONRegexp rv = (BSONRegexp)bv.Value;
+                        BsonRegexp rv = (BsonRegexp)bv.Value;
                         WriteTypeAndKey(key, bv, bw);
                         bw.WriteCString(rv.Re ?? "");
                         bw.WriteCString(rv.Opts ?? "");
                         break;
                     }
-                case BSONType.BINDATA:
+                case BsonType.BINDATA:
                     {
-                        BSONBinData bdata = (BSONBinData)bv.Value;
+                        BsonBinData bdata = (BsonBinData)bv.Value;
                         WriteTypeAndKey(key, bv, bw);
                         bw.Write(bdata.Data.Length);
                         bw.Write(bdata.Subtype);
                         bw.Write(bdata.Data);
                         break;
                     }
-                case BSONType.DBREF:
+                case BsonType.DBREF:
                     //Unsupported DBREF!
                     break;
-                case BSONType.TIMESTAMP:
+                case BsonType.TIMESTAMP:
                     {
-                        BSONTimestamp ts = (BSONTimestamp)bv.Value;
+                        BsonTimestamp ts = (BsonTimestamp)bv.Value;
                         WriteTypeAndKey(key, bv, bw);
                         bw.Write(ts.Inc);
                         bw.Write(ts.Ts);
                         break;
                     }
-                case BSONType.CODEWSCOPE:
+                case BsonType.CODEWSCOPE:
                     {
-                        BSONCodeWScope cw = (BSONCodeWScope)bv.Value;
+                        BsonCodeWScope cw = (BsonCodeWScope)bv.Value;
                         WriteTypeAndKey(key, bv, bw);
                         using (var cwwr = new ExtBinaryWriter(new MemoryStream()))
                         {
@@ -504,13 +503,9 @@ namespace Ejdb.BSON {
             }		
         }
 
-	    protected void WriteTypeAndKey(string key, BSONValue bv, ExtBinaryWriter bw) {
+	    protected void WriteTypeAndKey(string key, BsonValue bv, ExtBinaryWriter bw) {
 			bw.Write((byte) bv.BSONType);
             bw.WriteCString(key);
 		}
-
-		protected void CheckFields()
-		{
-		}
-	}
+    }
 }

@@ -17,25 +17,37 @@ using System;
 
 namespace Ejdb.BSON {
 
-	/// <summary>
-	/// Various BSON processing constants and shared values.
-	/// </summary>
-	public static class BsonConstants {
+	[Serializable]
+	public sealed class BsonNull : IBsonValue {
 
-		static BsonConstants() 
-        {
-			Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		public static BsonNull VALUE = new BsonNull();
+
+		public BsonType BSONType {
+			get {
+				return BsonType.NULL;
+			}
 		}
 
-		/// <summary>
-		/// Gets or sets the epoch.
-		/// </summary>
-		public static DateTime Epoch { get; private set; }
+		public override bool Equals(object obj) {
+			if (obj == null) {
+				return false;
+			}
+			if (ReferenceEquals(this, obj)) {
+				return true;
+			}
+			if (!(obj is BsonNull)) {
+				return false;
+			}
+			return true;
+		}
 
-        /// <summary>
-        /// The name of the id field
-        /// </summary>
-	    public const string Id = "_id";
+		public override int GetHashCode() {
+			return 0;
+		}
+
+		public override string ToString() {
+			return "[BsonNull]";
+		}
 	}
 }
 

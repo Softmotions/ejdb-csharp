@@ -56,7 +56,7 @@ namespace Ejdb.DB {
 		/// <summary>
 		/// Last used query hints document.
 		/// </summary>
-		BSONDocument _hints;
+		BsonDocument _hints;
 
 		/// <summary>
 		/// Name of the collection used by default.
@@ -110,7 +110,7 @@ namespace Ejdb.DB {
 			}
 		}
 
-		internal EJDBQuery(EJDB jb, BSONDocument qdoc, string defaultcollection = null) {
+		internal EJDBQuery(EJDB jb, BsonDocument qdoc, string defaultcollection = null) {
 			_qptr = _ejdbcreatequery(jb.DBPtr, qdoc.ToByteArray());
 			if (_qptr == IntPtr.Zero) {
 				throw new EJDBQueryException(jb);
@@ -126,7 +126,7 @@ namespace Ejdb.DB {
 		/// <param name="doc">Query document.</param>
 		public EJDBQuery AddOR(object docobj) {
 			CheckDisposed();
-			BSONDocument doc = BSONDocument.ValueOf(docobj);
+			BsonDocument doc = BsonDocument.ValueOf(docobj);
 			//static extern IntPtr _ejdbqueryaddor([In] IntPtr jb, [In] IntPtr qptr, [In] byte[] bsdata);
 			IntPtr qptr = _ejdbqueryaddor(_jb.DBPtr, _qptr, doc.ToByteArray());
 			if (qptr == IntPtr.Zero) {
@@ -143,7 +143,7 @@ namespace Ejdb.DB {
 		/// </remarks>
 		/// <returns>This query object.</returns>
 		/// <param name="hints">Hints document.</param>
-		public EJDBQuery SetHints(BSONDocument hints) {
+		public EJDBQuery SetHints(BsonDocument hints) {
 			CheckDisposed();
 			//0F-00-00-00-10-24-6D-61-78-00-0A-00-00-00-00
 			//static extern IntPtr _ejdbqueryhints([In] IntPtr jb, [In] IntPtr qptr, [In] byte[] bsdata);
@@ -204,7 +204,7 @@ namespace Ejdb.DB {
 			return cur;
 		}
 
-		public BSONIterator FinOne(string cname = null, int qflags = 0) {
+		public BsonIterator FinOne(string cname = null, int qflags = 0) {
 			using (EJDBQCursor cur = Find(cname, qflags | JBQRYFINDONE_FLAG)) {
 				return cur.Next();
 			}
@@ -229,7 +229,7 @@ namespace Ejdb.DB {
 				throw new ArgumentException("Max limit cannot be negative");
 			}
 			if (_hints == null) {
-				_hints = new BSONDocument();
+				_hints = new BsonDocument();
 			}
 			_hints["$max"] = max;
 			_dutyhints = true;
@@ -241,7 +241,7 @@ namespace Ejdb.DB {
 				throw new ArgumentException("Skip value cannot be negative");
 			}
 			if (_hints == null) {
-				_hints = new BSONDocument();
+				_hints = new BsonDocument();
 			}
 			_hints["$skip"] = skip;
 			_dutyhints = true;
@@ -250,11 +250,11 @@ namespace Ejdb.DB {
 
 		public EJDBQuery OrderBy(string field, bool asc = true) {
 			if (_hints == null) {
-				_hints = new BSONDocument();
+				_hints = new BsonDocument();
 			}
-			BSONDocument oby = _hints["$orderby"] as BSONDocument;
+			BsonDocument oby = _hints["$orderby"] as BsonDocument;
 			if (oby == null) {
-				oby = new BSONDocument();
+				oby = new BsonDocument();
 				_hints["$orderby"] = oby;
 			}
 			oby[field] = (asc) ? 1 : -1;
@@ -291,11 +291,11 @@ namespace Ejdb.DB {
 		//.//////////////////////////////////////////////////////////////////
 		EJDBQuery IncExFields(string[] fields, int inc) {
 			if (_hints == null) {
-				_hints = new BSONDocument();
+				_hints = new BsonDocument();
 			}
-			BSONDocument fdoc = _hints["$fields"] as BSONDocument;
+			BsonDocument fdoc = _hints["$fields"] as BsonDocument;
 			if (fdoc == null) {
-				fdoc = new BSONDocument();
+				fdoc = new BsonDocument();
 				_hints["$fields"] = fdoc;
 			}
 			foreach (var fn in fields) {

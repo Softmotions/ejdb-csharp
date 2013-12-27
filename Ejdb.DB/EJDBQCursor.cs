@@ -23,7 +23,7 @@ namespace Ejdb.DB {
 	/// <summary>
 	/// Query result set container.
 	/// </summary>
-	public class EJDBQCursor : IDisposable, IEnumerable<BSONIterator> {
+	public class EJDBQCursor : IDisposable, IEnumerable<BsonIterator> {
 		//optional query execution log buffer
 		string _log;
 		//current cursor position
@@ -66,7 +66,7 @@ namespace Ejdb.DB {
 			_len = len;
 		}
 
-		public BSONIterator this[int idx] {
+		public BsonIterator this[int idx] {
 			get {
 				if (_qresptr == IntPtr.Zero || idx >= _len || idx < 0) {
 					return null;
@@ -79,19 +79,19 @@ namespace Ejdb.DB {
 				}
 				byte[] bsdata = new byte[size];
 				Marshal.Copy(bsdataptr, bsdata, 0, bsdata.Length);
-				return new BSONIterator(bsdata);
+				return new BsonIterator(bsdata);
 			}
 		}
 
-		public BSONIterator Next() {
+		public BsonIterator Next() {
 			if (_qresptr == IntPtr.Zero || _pos >= _len) {
 				return null;
 			}
 			return this[_pos++];
 		}
 
-		public IEnumerator<BSONIterator> GetEnumerator() {
-			BSONIterator it;
+		public IEnumerator<BsonIterator> GetEnumerator() {
+			BsonIterator it;
 			while ((it = Next()) != null) {
 				yield return it;
 			}

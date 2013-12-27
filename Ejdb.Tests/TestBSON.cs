@@ -25,15 +25,15 @@ namespace Ejdb.Tests {
 
 		[Test]
 		public void TestSerializeEmpty() {
-			BSONDocument doc = new BSONDocument();
+			BsonDocument doc = new BsonDocument();
 			Assert.AreEqual("05-00-00-00-00", doc.ToDebugDataString()); 
 		}
 
 		[Test]
 		public void TestSerialize1() {
 			byte[] bdata;
-			BSONDocument doc = new BSONDocument();
-			doc.SetBSONValueNew("0", BSONValue.GetNumber(1));
+			BsonDocument doc = new BsonDocument();
+			doc.Add("0", BsonValue.GetNumber(1));
 			//0C-00-00-00 	len
 			//10		  	type
 			//30-00 		key
@@ -43,23 +43,23 @@ namespace Ejdb.Tests {
 			Assert.AreEqual("0C-00-00-00-10-30-00-01-00-00-00-00", doc.ToDebugDataString());
 			Assert.AreEqual(bdata.Length, (int) Convert.ToByte(doc.ToDebugDataString().Substring(0, 2), 16));
 
-			BSONDocument doc2 = new BSONDocument(doc.ToByteArray());
+			BsonDocument doc2 = new BsonDocument(doc.ToByteArray());
 			Assert.AreEqual(1, doc2.KeysCount);
 			int c = 0;
 			foreach (var bv in doc2) {
 				c++;		
 				Assert.IsNotNull(bv);
-				Assert.AreEqual(BSONType.INT, bv.BSONType);
+				Assert.AreEqual(BsonType.INT, bv.BsonType);
 				Assert.AreEqual("0", bv.Key);
 				Assert.AreEqual(1, bv.Value);
 			}
 			Assert.That(c > 0);
-            doc2.SetBSONValueNew("0", BSONValue.GetNumber(2));
+            doc2.Add("0", BsonValue.GetNumber(2));
 			Assert.AreEqual(1, doc2.KeysCount);
 			object ival = doc2["0"];
 			Assert.IsInstanceOf(typeof(int), ival);
 			Assert.AreEqual(2, ival);
-			doc2.SetBSONValueNew("1", BSONValue.GetNumber(Int32.MaxValue));
+			doc2.Add("1", BsonValue.GetNumber(Int32.MaxValue));
 			//13-00-00-00
 			//10
 			//30-00
@@ -70,22 +70,22 @@ namespace Ejdb.Tests {
 			Assert.AreEqual("13-00-00-00-10-30-00-02-00-00-00-10-31-00-FF-FF-FF-7F-00", 
 			                doc2.ToDebugDataString());
 
-			doc2 = new BSONDocument(doc2);
+			doc2 = new BsonDocument(doc2);
 			Assert.AreEqual("13-00-00-00-10-30-00-02-00-00-00-10-31-00-FF-FF-FF-7F-00", 
 			                doc2.ToDebugDataString());
 
-			doc2 = new BSONDocument(doc2.ToByteArray());
+			doc2 = new BsonDocument(doc2.ToByteArray());
 			Assert.AreEqual("13-00-00-00-10-30-00-02-00-00-00-10-31-00-FF-FF-FF-7F-00", 
 			                doc2.ToDebugDataString());
 
-			doc = new BSONDocument();
+			doc = new BsonDocument();
 			doc["a"] = 1;
 			Assert.AreEqual("0C-00-00-00-10-61-00-01-00-00-00-00", doc.ToDebugDataString());		
 		}
 
 		[Test]
 		public void TestAnonTypes() {
-			BSONDocument doc = BSONDocument.ValueOf(new {a = "b", c = 1});
+			BsonDocument doc = BsonDocument.ValueOf(new {a = "b", c = 1});
 			//15-00-00-00
 			//02-61-00
 			//02-00-00-00
@@ -93,7 +93,7 @@ namespace Ejdb.Tests {
 			//10-63-00-01-00-00-00-00
 			Assert.AreEqual("15-00-00-00-02-61-00-02-00-00-00-62-00-10-63-00-01-00-00-00-00", 
 			                doc.ToDebugDataString());
-			doc["d"] = new{e=new BSONRegexp("r1", "o2")}; //subdocument
+			doc["d"] = new{e=new BsonRegexp("r1", "o2")}; //subdocument
 			//26-00-00-00-02-61-00-02-00-00-00-62-00-10-63-00-01-00-00-00-
 			//03
 			//64-00
@@ -108,11 +108,11 @@ namespace Ejdb.Tests {
 
 		[Test]
 		public void TestIterate1() {
-			var doc = new BSONDocument();
+			var doc = new BsonDocument();
 			doc["a"] = "av";
 			doc["bb"] = 24;
-			//doc["ccc"] = BSONDocument.ValueOf(new{na1 = 1, nb = "2"});
-			//doc["d"] = new BSONOid("51b9f3af98195c4600000000");
+			//doc["ccc"] = BsonDocument.ValueOf(new{na1 = 1, nb = "2"});
+			//doc["d"] = new BsonOid("51b9f3af98195c4600000000");
 
 			//17-00-00-00 						+4
 			//02-61-00-03-00-00-00-61-76-00		+10
@@ -120,27 +120,27 @@ namespace Ejdb.Tests {
 			//00								+1
 			Assert.AreEqual("17-00-00-00-02-61-00-03-00-00-00-61-76-00-10-62-62-00-18-00-00-00-00", 
 			                doc.ToDebugDataString());
-			BSONIterator it = new BSONIterator(doc);
+			BsonIterator it = new BsonIterator(doc);
 			Assert.AreEqual(doc.ToByteArray().Length, it.DocumentLength);
 			var c = "";
-			while (it.Next() != BSONType.EOO) {
+			while (it.Next() != BsonType.EOO) {
 				c += it.CurrentKey;
 			}	
 			Assert.AreEqual("abb", c);
 			it.Dispose();
 
-			it = new BSONIterator(doc);
+			it = new BsonIterator(doc);
 			var cnt = 0;
-			while (it.Next() != BSONType.EOO) {
-				BSONValue bv = it.FetchCurrentValue();
+			while (it.Next() != BsonType.EOO) {
+				BsonValue bv = it.FetchCurrentValue();
 				Assert.IsNotNull(bv);
 				if (cnt == 0) {
-					Assert.IsTrue(bv.BSONType == BSONType.STRING);										
+					Assert.IsTrue(bv.BSONType == BsonType.STRING);										
 					Assert.IsTrue(it.CurrentKey  == "a");										
 					Assert.AreEqual("av", bv.Value);										
 				} 
 				if (cnt == 1) {
-					Assert.IsTrue(bv.BSONType == BSONType.INT);
+					Assert.IsTrue(bv.BSONType == BsonType.INT);
                     Assert.IsTrue(it.CurrentKey == "bb");										
 					Assert.AreEqual(24, bv.Value);
 				}
@@ -150,10 +150,10 @@ namespace Ejdb.Tests {
 
 		[Test]
 		public void TestIterate2() {
-			var doc = new BSONDocument();
+			var doc = new BsonDocument();
 			doc["a"] = "av";
-			doc["b"] = BSONDocument.ValueOf(new{cc = 1});
-			doc["d"] = new BSONOid("51b9f3af98195c4600000000");
+			doc["b"] = BsonDocument.ValueOf(new{cc = 1});
+			doc["d"] = new BsonOid("51b9f3af98195c4600000000");
 			Assert.AreEqual(3, doc.KeysCount);
 			//Console.WriteLine(doc.KeysCount);
 			//Console.WriteLine(doc.ToDebugDataString());
@@ -173,17 +173,17 @@ namespace Ejdb.Tests {
 				"07-64-00-" +
 				"51-B9-F3-AF-98-19-5C-46-00-00-00-00-" +
 				"00", doc.ToDebugDataString());
-			BSONIterator it = new BSONIterator(doc);
+			BsonIterator it = new BsonIterator(doc);
 			int c = 0;
 			foreach (var bt in it) {
 				if (c == 0) {
-					Assert.IsTrue(bt == BSONType.STRING);
+					Assert.IsTrue(bt == BsonType.STRING);
 				}
 				if (c == 1) {
-					Assert.IsTrue(bt == BSONType.OBJECT);
+					Assert.IsTrue(bt == BsonType.OBJECT);
 				}
 				if (c == 2) {
-					Assert.IsTrue(bt == BSONType.OID);
+					Assert.IsTrue(bt == BsonType.OID);
 				}
 				++c;
 			}
@@ -197,7 +197,7 @@ namespace Ejdb.Tests {
 			Assert.IsTrue(thrown);
 
 			c = 0;
-			it = new BSONIterator(doc);
+			it = new BsonIterator(doc);
 			foreach (var bv in it.Values()) {
 				if (c == 0) {
 					Assert.AreEqual("a", it.CurrentKey);
@@ -205,19 +205,19 @@ namespace Ejdb.Tests {
 				}
 				if (c == 1) {
                     Assert.AreEqual("b", it.CurrentKey);
-					BSONDocument sdoc = bv.Value as BSONDocument;
+					BsonDocument sdoc = bv.Value as BsonDocument;
 					Assert.IsNotNull(sdoc);
-				    var it2 = new BSONIterator(sdoc);
+				    var it2 = new BsonIterator(sdoc);
 				    foreach (var bv2 in it2.Values()) {
                         Assert.AreEqual("cc", it2.CurrentKey);
 						Assert.AreEqual(1, bv2.Value);
-						Assert.AreEqual(BSONType.INT, bv2.BSONType);
+						Assert.AreEqual(BsonType.INT, bv2.BSONType);
 					}
 				}
 				if (c == 2) {
-					Assert.AreEqual(BSONType.OID, bv.BSONType);
-					Assert.IsInstanceOf(typeof(BSONOid), bv.Value);
-					var oid = bv.Value as BSONOid;
+					Assert.AreEqual(BsonType.OID, bv.BSONType);
+					Assert.IsInstanceOf(typeof(BsonOid), bv.Value);
+					var oid = bv.Value as BsonOid;
 					Assert.AreEqual("51b9f3af98195c4600000000", oid.ToString());
 				}
 				c++;
@@ -226,10 +226,10 @@ namespace Ejdb.Tests {
 
 		[Test]
 		public void TestIterateRE() {
-			var doc = new BSONDocument();
-			doc["a"] = new BSONRegexp("b", "c");
+			var doc = new BsonDocument();
+			doc["a"] = new BsonRegexp("b", "c");
 			doc["d"] = 1;
-			doc["e"] = BSONDocument.ValueOf(new {f = new BSONRegexp("g", "")});
+			doc["e"] = BsonDocument.ValueOf(new {f = new BsonRegexp("g", "")});
 			doc["h"] = 2;
 			//28-00-00-00
 			//0B-61-00-62-00-63-00
@@ -238,48 +238,48 @@ namespace Ejdb.Tests {
 			//0B-66-00-67-00-00-00
 			//10-68-00-02-00-00-00-00
 			var cs = "";
-			foreach (var bt in new BSONIterator(doc)) {
+			foreach (var bt in new BsonIterator(doc)) {
 				cs += bt.ToString();
 			}
 			Assert.AreEqual("REGEXINTOBJECTINT", cs);
 			cs = "";
 		    
-            var it = new BSONIterator(doc);
+            var it = new BsonIterator(doc);
 		    foreach (var bv in it.Values()) {
 				if (it.CurrentKey == "a") {
-					cs += ((BSONRegexp) bv.Value).Re;
-					cs += ((BSONRegexp) bv.Value).Opts;
+					cs += ((BsonRegexp) bv.Value).Re;
+					cs += ((BsonRegexp) bv.Value).Opts;
 				} else {
 					cs += bv.Value;
 				}
 			}
-			Assert.AreEqual("bc1[BSONDocument: [BSONValue: BSONType=REGEX, Key=f, Value=[BSONRegexp: re=g, opts=]]]2", cs);
+			Assert.AreEqual("bc1[BsonDocument: [BsonValue: BsonType=REGEX, Key=f, Value=[BsonRegexp: re=g, opts=]]]2", cs);
 		}
 
 		[Test]
 		public void TestFilteredDoc() {
-			var doc = new BSONDocument();
+			var doc = new BsonDocument();
 			doc["c"] = "d";
 			doc["aaa"] = 11;
-			doc["ndoc"] = BSONDocument.ValueOf(new {
+			doc["ndoc"] = BsonDocument.ValueOf(new {
 				aaaa = "nv1",
 				d = "nv2",
-				nnd = BSONDocument.ValueOf(new {
+				nnd = BsonDocument.ValueOf(new {
 					nnv = true,
 					nns = "s"
 				})
 			});
-			doc["ndoc2"] = BSONDocument.ValueOf(new {
+			doc["ndoc2"] = BsonDocument.ValueOf(new {
 				n = "v"
 			});
 			doc["f"] = "f";
-			BSONIterator it = new BSONIterator(doc);
-			BSONDocument doc2 = it.ToBSONDocument("c", "ndoc.d", "ndoc.nnd.nns", "f");
+			BsonIterator it = new BsonIterator(doc);
+			BsonDocument doc2 = it.ToBsonDocument("c", "ndoc.d", "ndoc.nnd.nns", "f");
 			Assert.AreEqual(3, doc2.KeysCount);
 			Assert.AreEqual("d", doc2["c"]);
-			Assert.AreEqual(2, ((BSONDocument) doc2["ndoc"]).KeysCount);
-			Assert.AreEqual("nv2", ((BSONDocument) doc2["ndoc"])["d"]);
-			Assert.AreEqual("s", ((BSONDocument) ((BSONDocument) doc2["ndoc"])["nnd"])["nns"]);
+			Assert.AreEqual(2, ((BsonDocument) doc2["ndoc"]).KeysCount);
+			Assert.AreEqual("nv2", ((BsonDocument) doc2["ndoc"])["d"]);
+			Assert.AreEqual("s", ((BsonDocument) ((BsonDocument) doc2["ndoc"])["nnd"])["nns"]);
 			Assert.AreEqual("s", doc2["ndoc.nnd.nns"]);
 			Assert.AreEqual("f", "f");
 			//Console.WriteLine("doc2=" + doc2);
