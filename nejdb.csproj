@@ -61,9 +61,12 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Ejdb.DB\EJDB.cs" />
+    <Compile Include="Ejdb.DB\Query\Query.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryReader.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryWriter.cs" />
+    <Compile Include="Ejdb.DB\Query\IQuery.cs" />
     <Compile Include="Ejdb.Tests\TestBSON.cs" />
+    <Compile Include="Ejdb.Utils\HelperExtensions.cs" />
     <Compile Include="Ejdb.Utils\TypeExtension.cs" />
     <Compile Include="Ejdb.BSON\BSONType.cs" />
     <Compile Include="Ejdb.BSON\InvalidBSONDataException.cs" />

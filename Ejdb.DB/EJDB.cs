@@ -1017,6 +1017,12 @@ namespace Ejdb.DB {
 			return new EJDBQuery(this, new BSONDocument(), defaultcollection);
 		}
 
+        public EJDBQCursor Find(string collection, IQuery query)
+        {
+            var ejdbQuery = new EJDBQuery(this, query.GetQueryDocument(), collection);
+            return ejdbQuery.Find();
+        }
+
 		/// <summary>
 		/// Convert JSON string into BSONDocument.
 		/// Returns `null` if conversion failed.
