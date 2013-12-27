@@ -157,12 +157,7 @@ namespace Ejdb.BSON {
 	        return new BsonValue(BsonType.MINKEY);
 	    }
 
-	    public static BsonValue CreateOid(string oid)
-	    {
-	        return new BsonValue(BsonType.OID, new BsonOid(oid));
-	    }
-
-	    public static BsonValue Create(BsonOid oid)
+        public static BsonValue Create(BsonOid oid)
 	    {
 	        return new BsonValue(BsonType.OID, oid);
 	    }

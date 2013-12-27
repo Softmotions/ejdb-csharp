@@ -157,6 +157,8 @@ namespace Ejdb.Tests {
             Assert.AreEqual(dateTime.ToUniversalTime(), dateTime2.ToUniversalTime());
 	    }
 
+
+
 	    [Test]
 		public void SerializeAnonmyousType() 
         {
@@ -204,7 +206,7 @@ namespace Ejdb.Tests {
 			doc["bb"] = 24;
 
 			//doc["ccc"] = BsonDocument.ValueOf(new{na1 = 1, nb = "2"});
-			//doc["d"] = new BsonOid("51b9f3af98195c4600000000");
+			//doc["d"] = new BsonOidOld("51b9f3af98195c4600000000");
 
 			//17-00-00-00 						+4
 			//02-61-00-03-00-00-00-61-76-00		+10
@@ -245,7 +247,7 @@ namespace Ejdb.Tests {
 			var doc = new BsonDocument();
 			doc["a"] = "av";
 			doc["b"] = BsonDocument.ValueOf(new{cc = 1});
-			doc["d"] = new BsonOid("51b9f3af98195c4600000000");
+            doc["d"] = new BsonOid("51b9f3af98195c4600000000");
 			Assert.AreEqual(3, doc.KeysCount);
 			//Console.WriteLine(doc.KeysCount);
 			//Console.WriteLine(doc.ToDebugDataString());
@@ -308,8 +310,8 @@ namespace Ejdb.Tests {
 				}
 				if (c == 2) {
 					Assert.AreEqual(BsonType.OID, bv.BSONType);
-					Assert.IsInstanceOf(typeof(BsonOid), bv.Value);
-					var oid = bv.Value as BsonOid;
+                    Assert.IsInstanceOf(typeof(BsonOid), bv.Value);
+                    var oid = bv.Value as BsonOid;
 					Assert.AreEqual("51b9f3af98195c4600000000", oid.ToString());
 				}
 				c++;

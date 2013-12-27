@@ -249,7 +249,8 @@ namespace Ejdb.BSON {
                     break;
                 case BsonType.OID:
                     Debug.Assert(_entryLen == 12);
-                    _entryDataValue = new BsonValue(_ctype, (object) new BsonOid(_input));
+                    var bytes = _input.ReadBytes(12);
+                    _entryDataValue = new BsonValue(_ctype, new BsonOid(bytes));
                     break;
                 case BsonType.STRING:
                 case BsonType.CODE:

@@ -36,6 +36,27 @@ namespace Ejdb.BSON {
         /// The name of the id field
         /// </summary>
 	    public const string Id = "_id";
+
+        /// <summary>
+        /// Converts a DateTime to UTC (with special handling for MinValue and MaxValue).
+        /// </summary>
+        /// <param name="dateTime">A DateTime.</param>
+        /// <returns>The DateTime in UTC.</returns>
+        public static DateTime ToUniversalTime(DateTime dateTime)
+        {
+            if (dateTime == DateTime.MinValue)
+            {
+                return DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+            }
+            else if (dateTime == DateTime.MaxValue)
+            {
+                return DateTime.SpecifyKind(DateTime.MaxValue, DateTimeKind.Utc);
+            }
+            else
+            {
+                return dateTime.ToUniversalTime();
+            }
+        }
 	}
 }
 

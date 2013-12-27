@@ -433,9 +433,8 @@ namespace Ejdb.BSON {
                 case BsonType.OID:
                     {
                         WriteTypeAndKey(key, bv, bw);
-                        BsonOid oid = (BsonOid)bv.Value;
-                        Debug.Assert(oid._bytes.Length == 12);
-                        bw.Write(oid._bytes);
+                        var oid = (BsonOid)bv.Value;
+                        bw.Write(oid.ToByteArray());
                         break;
                     }
                 case BsonType.STRING:

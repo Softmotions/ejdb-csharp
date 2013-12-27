@@ -55,11 +55,11 @@ namespace Ejdb.Tests {
 			bool rv = jb.Save("mycoll", doc);
 			Assert.IsTrue(rv);
 			Assert.IsNotNull(doc["_id"]);
-			Assert.IsInstanceOf(typeof(BsonOid), doc["_id"]); 
+            Assert.IsInstanceOf(typeof(BsonOid), doc["_id"]); 
 			rv = jb.Save("mycoll", doc);
 			Assert.IsTrue(rv);
 
-			BsonIterator it = jb.Load("mycoll", doc["_id"] as BsonOid);
+            BsonIterator it = jb.Load("mycoll", doc["_id"] as BsonOid);
 			Assert.IsNotNull(it);
 
 			BsonDocument doc2 = it.ToBsonDocument();
@@ -67,7 +67,7 @@ namespace Ejdb.Tests {
 			Assert.IsTrue(doc == doc2);
 
 			Assert.AreEqual(1, jb.CreateQueryFor("mycoll").Count());
-			Assert.IsTrue(jb.Remove("mycoll", doc["_id"] as BsonOid));
+            Assert.IsTrue(jb.Remove("mycoll", doc["_id"] as BsonOid));
 			Assert.AreEqual(0, jb.CreateQueryFor("mycoll").Count());
 
 			jb.Save("mycoll", doc);

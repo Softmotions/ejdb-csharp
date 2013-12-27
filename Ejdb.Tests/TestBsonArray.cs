@@ -81,8 +81,8 @@ namespace Ejdb.Tests
          [Test]
          public void TestCreateObjectIdArray()
          {
-             var value1 = new BsonOid(Guid.NewGuid().ToByteArray());
-             var value2 = new BsonOid(Guid.NewGuid().ToByteArray());
+             var value1 = BsonOid.GenerateNewId();
+             var value2 = BsonOid.GenerateNewId();
              var values = new[] { value1, value2 };
              var array = new BsonArray(values);
              Assert.AreEqual(2, array.Count);

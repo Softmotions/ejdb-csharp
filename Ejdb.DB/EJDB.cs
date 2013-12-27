@@ -970,7 +970,7 @@ namespace Ejdb.DB {
 				return null;
 			}
 			//static extern IntPtr _ejdbloadbson([In] IntPtr coll, [In] byte[] oid);
-			byte[] bsdata = BsonPtrIntoByteArray(_ejdbloadbson(cptr, oid.ToBytes()));
+			byte[] bsdata = BsonPtrIntoByteArray(_ejdbloadbson(cptr, oid.ToByteArray()));
 			if (bsdata.Length == 0) {
 				return null;
 			}
@@ -982,7 +982,8 @@ namespace Ejdb.DB {
 		/// </summary>
 		/// <param name="cname">Name of collection.</param>
 		/// <param name="oids">Object identifiers.</param>
-		public bool Remove(string cname, params BsonOid[] oids) {
+        public bool Remove(string cname, params BsonOid[] oids)
+        {
 			CheckDisposed();
 			IntPtr cptr = _ejdbgetcoll(_db, cname);
 			if (cptr == IntPtr.Zero) {
@@ -990,7 +991,7 @@ namespace Ejdb.DB {
 			}
 			//internal static extern bool _ejdbrmbson([In] IntPtr cptr, [In] byte[] oid);
 			foreach (var oid in oids) {
-				if (!_ejdbrmbson(cptr, oid.ToBytes())) {
+				if (!_ejdbrmbson(cptr, oid.ToByteArray())) {
 					if (_throwonfail) {
 						throw new EJDBException(this);
 					} else {
