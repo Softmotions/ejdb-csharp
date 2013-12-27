@@ -66,20 +66,21 @@ namespace Ejdb.DB
             return _BinaryQuery("$nin", fieldName, comparisonValues);
         }
 
-        public static IQuery Not(string fieldName, object comparisonValue)
+        public static IQuery NotEquals(string fieldName, object comparisonValue)
         {
             return _BinaryQuery("$not", fieldName, comparisonValue);
         }
 
-        /* public static IQuery Not(string fieldName, IQuery query)
+        public static IQuery Not(string fieldName, IPartialQuery query)
         {
-            var childValue = query.GetQueryDocument();
-            return new Query("$not", childValue);
-        } */
+            var childValue = new BsonDocument();
+            childValue.Add(query.QueryOperator, query.ComparisonValue);
+            return _BinaryQuery("$not", fieldName, childValue);
+        }
 
         public static IQuery Between<T>(string fieldName, T comparisonValue1, T comparisonValue2)
         {
-            var comparisonValues = new T[] { comparisonValue1, comparisonValue2 };
+            var comparisonValues = new[] { comparisonValue1, comparisonValue2 };
             return _BinaryQuery("$bt", fieldName, comparisonValues);
         }
 
@@ -93,17 +94,30 @@ namespace Ejdb.DB
             return _CombinedQuery("$or", queries);
         }
 
-        public static IQuery Exists(string name)
+        public static IQuery Exists(string fieldName)
         {
-            return null;
+            return _BinaryQuery("$exists", fieldName, true);
         }
 
-        public static IQuery ElemMatch(string name, BsonDocument queryDocument)
+        public static IQuery NotExists(string fieldName)
         {
-            return null;
+            return _BinaryQuery("$exists", fieldName, false);
         }
 
-        private static IQuery _CombinedQuery(string combinator, IQuery[] queries)
+        public static IQuery ElemMatch(string fieldName, params IQuery[] queries)
+        {
+            var queryDocument = new BsonDocument();
+
+            foreach (var query in queries)
+            {
+                foreach (var field in query.GetQueryDocument())
+                    queryDocument[field.Key] = field.Value;
+            }
+
+            return new Query("$elemMatch", queryDocument);
+        }
+
+        private static IQuery _CombinedQuery(string combinator, params IQuery[] queries)
         {
             var documents = queries.Select(x => x.GetQueryDocument()).ToArray();
             var childValue = new BsonArray(documents);
