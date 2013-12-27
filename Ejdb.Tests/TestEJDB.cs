@@ -49,7 +49,8 @@ namespace Ejdb.Tests {
 		public void Test3SaveLoad() {
 			EJDB jb = new EJDB("testdb1", EJDB.DEFAULT_OPEN_MODE | EJDB.JBOTRUNC);
 			Assert.IsTrue(jb.IsOpen);
-			BSONDocument doc = new BSONDocument().SetNumber("age", 33);
+		    BSONDocument doc = new BSONDocument();
+            doc.SetBSONValueNew("age", BSONValue.GetNumber(33));
 			Assert.IsNull(doc["_id"]);
 			bool rv = jb.Save("mycoll", doc);
 			Assert.IsTrue(rv);
@@ -82,7 +83,8 @@ namespace Ejdb.Tests {
 		public void Test4Q1() {
 			EJDB jb = new EJDB("testdb1", EJDB.DEFAULT_OPEN_MODE | EJDB.JBOTRUNC);
 			Assert.IsTrue(jb.IsOpen);
-			BSONDocument doc = new BSONDocument().SetNumber("age", 33);
+		    var doc = new BSONDocument();
+		    doc.SetBSONValueNew("age", BSONValue.GetNumber(33));
 			Assert.IsNull(doc["_id"]);
 			bool rv = jb.Save("mycoll", doc);
 			Assert.IsTrue(rv);

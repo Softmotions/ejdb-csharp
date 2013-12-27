@@ -947,7 +947,7 @@ namespace Ejdb.DB {
 			//static extern bool _ejdbsavebson([In] IntPtr coll, [In] byte[] bsdata, [Out] byte[] oid, bool merge);
 			rv = _ejdbsavebson(cptr, bsdata, oiddata, merge);
 			if (rv && bv == null) {
-				doc.SetOID("_id", new BSONOid(oiddata));
+				doc.SetBSONValueNew("_id", BSONValue.GetOID(new BSONOid(oiddata)));
 			}
 			if (_throwonfail && !rv) {
 				throw new EJDBException(this);

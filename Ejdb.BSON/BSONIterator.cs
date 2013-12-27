@@ -237,99 +237,101 @@ namespace Ejdb.BSON {
 			}
 			_entryDataSkipped = true;
 			switch (_ctype) {
-				case BSONType.EOO:					 
-				case BSONType.UNDEFINED:
-				case BSONType.NULL:
-				case BSONType.MAXKEY:
-				case BSONType.MINKEY:
-					_entryDataValue = new BSONValue(_ctype, _entryKey);
-					break;	
-				case BSONType.OID:
-					Debug.Assert(_entryLen == 12);
-					_entryDataValue = new BSONValue(_ctype, _entryKey, new BSONOid(_input));
-					break;
-				case BSONType.STRING:
-				case BSONType.CODE:
-				case BSONType.SYMBOL:
-					{						
-						Debug.Assert(_entryLen - 1 >= 0);						
-						string sv = Encoding.UTF8.GetString(_input.ReadBytes(_entryLen - 1)); 
-						_entryDataValue = new BSONValue(_ctype, _entryKey, sv);
-						var rb = _input.ReadByte();
-						Debug.Assert(rb == 0x00); //trailing zero byte
-						break;
-					}
-				case BSONType.BOOL:
-					_entryDataValue = new BSONValue(_ctype, _entryKey, _input.ReadBoolean());
-					break;
-				case BSONType.INT:
-					_entryDataValue = new BSONValue(_ctype, _entryKey, _input.ReadInt32());
-					break;
-				case BSONType.OBJECT:
-				case BSONType.ARRAY:
-					{
-						BSONDocument doc = (_ctype == BSONType.OBJECT ? new BSONDocument() : new BSONArray());
-						BSONIterator sit = new BSONIterator(this);
-						while (sit.Next() != BSONType.EOO) {
-							doc.Add(sit.FetchCurrentValue());
-						}
-						_entryDataValue = new BSONValue(_ctype, _entryKey, doc); 
-						break;
-					}
-				case BSONType.DOUBLE:
-					_entryDataValue = new BSONValue(_ctype, _entryKey, _input.ReadDouble());
-					break;
-				case BSONType.LONG:				
-					_entryDataValue = new BSONValue(_ctype, _entryKey, _input.ReadInt64());
-					break;			
-				case BSONType.DATE:
-					_entryDataValue = new BSONValue(_ctype, _entryKey, 
-					                                BSONConstants.Epoch.AddMilliseconds(_input.ReadInt64()));
-					break;
-				case BSONType.TIMESTAMP:
-					{
-						int inc = _input.ReadInt32();
-						int ts = _input.ReadInt32(); 
-						_entryDataValue = new BSONValue(_ctype, _entryKey,
-						                                new BSONTimestamp(inc, ts));
-						break;
-					}
-				case BSONType.REGEX:
-					{
-						string re = _input.ReadCString();
-						string opts = _input.ReadCString();
-						_entryDataValue = new BSONValue(_ctype, _entryKey, 
-						                                new BSONRegexp(re, opts));	
-						break;
-					}
-				case BSONType.BINDATA:
-					{
-						byte subtype = _input.ReadByte();
-						BSONBinData bd = new BSONBinData(subtype, _entryLen - 1, _input);
-						_entryDataValue = new BSONValue(_ctype, _entryKey, bd);
-						break;
-					}
-				case BSONType.DBREF:
-					{
-						//Unsupported DBREF!
-						SkipData(true);
-						_entryDataValue = new BSONValue(_ctype, _entryKey);
-						break;
-					}
-				case BSONType.CODEWSCOPE:
-					{
-						int cwlen = _entryLen + 4;
-						Debug.Assert(cwlen > 5);
-						int clen = _input.ReadInt32(); //code length
-						string code = Encoding.UTF8.GetString(_input.ReadBytes(clen));
-						BSONCodeWScope cw = new BSONCodeWScope(code);
-						BSONIterator sit = new BSONIterator(_input, _input.ReadInt32());
-						while (sit.Next() != BSONType.EOO) {
-							cw.Add(sit.FetchCurrentValue());
-						}
-						_entryDataValue = new BSONValue(_ctype, _entryKey, cw);
-						break;
-					}				
+                case BSONType.EOO:
+                case BSONType.UNDEFINED:
+                case BSONType.NULL:
+                case BSONType.MAXKEY:
+                case BSONType.MINKEY:
+                    _entryDataValue = new BSONValue(_ctype, _entryKey);
+                    break;
+                case BSONType.OID:
+                    Debug.Assert(_entryLen == 12);
+                    _entryDataValue = new BSONValue(_ctype, (object) new BSONOid(_input));
+                    break;
+                case BSONType.STRING:
+                case BSONType.CODE:
+                case BSONType.SYMBOL:
+                    {
+                        Debug.Assert(_entryLen - 1 >= 0);
+                        string sv = Encoding.UTF8.GetString(_input.ReadBytes(_entryLen - 1));
+                        _entryDataValue = new BSONValue(_ctype, (object) sv);
+                        var rb = _input.ReadByte();
+                        Debug.Assert(rb == 0x00); //trailing zero byte
+                        break;
+                    }
+                case BSONType.BOOL:
+                    _entryDataValue = new BSONValue(_ctype, (object) _input.ReadBoolean());
+                    break;
+                case BSONType.INT:
+                    _entryDataValue = new BSONValue(_ctype, (object) _input.ReadInt32());
+                    break;
+                case BSONType.OBJECT:
+                case BSONType.ARRAY:
+                    {
+                        BSONDocument doc = (_ctype == BSONType.OBJECT ? new BSONDocument() : new BSONArray());
+                        BSONIterator sit = new BSONIterator(this);
+                        while (sit.Next() != BSONType.EOO)
+                        {
+                            doc.Add(sit.CurrentKey, sit.FetchCurrentValue());
+                        }
+                        _entryDataValue = new BSONValue(_ctype, doc);
+                        break;
+                    }
+                case BSONType.DOUBLE:
+                    _entryDataValue = new BSONValue(_ctype, _input.ReadDouble());
+                    break;
+                case BSONType.LONG:
+                    _entryDataValue = new BSONValue(_ctype, _input.ReadInt64());
+                    break;
+                case BSONType.DATE:
+                    _entryDataValue = new BSONValue(_ctype,
+                                                    BSONConstants.Epoch.AddMilliseconds(_input.ReadInt64()));
+                    break;
+                case BSONType.TIMESTAMP:
+                    {
+                        int inc = _input.ReadInt32();
+                        int ts = _input.ReadInt32();
+                        _entryDataValue = new BSONValue(_ctype,
+                                                        new BSONTimestamp(inc, ts));
+                        break;
+                    }
+                case BSONType.REGEX:
+                    {
+                        string re = _input.ReadCString();
+                        string opts = _input.ReadCString();
+                        _entryDataValue = new BSONValue(_ctype,
+                                                        new BSONRegexp(re, opts));
+                        break;
+                    }
+                case BSONType.BINDATA:
+                    {
+                        byte subtype = _input.ReadByte();
+                        BSONBinData bd = new BSONBinData(subtype, _entryLen - 1, _input);
+                        _entryDataValue = new BSONValue(_ctype, bd);
+                        break;
+                    }
+                case BSONType.DBREF:
+                    {
+                        //Unsupported DBREF!
+                        SkipData(true);
+                        _entryDataValue = new BSONValue(_ctype, _entryKey);
+                        break;
+                    }
+                case BSONType.CODEWSCOPE:
+                    {
+                        int cwlen = _entryLen + 4;
+                        Debug.Assert(cwlen > 5);
+                        int clen = _input.ReadInt32(); //code length
+                        string code = Encoding.UTF8.GetString(_input.ReadBytes(clen));
+                        BSONCodeWScope cw = new BSONCodeWScope(code);
+                        BSONIterator sit = new BSONIterator(_input, _input.ReadInt32());
+                        while (sit.Next() != BSONType.EOO)
+                        {
+                            cw.Add(sit.CurrentKey, sit.FetchCurrentValue());
+                        }
+                        _entryDataValue = new BSONValue(_ctype, (object) cw);
+                        break;
+                    }				
 			}
 			return _entryDataValue;
 		}
