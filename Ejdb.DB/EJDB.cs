@@ -54,7 +54,7 @@ namespace Ejdb.DB {
 		public const int JBOWRITER = 1 << 1;
 
 		/// <summary>
-		/// Create if db file not exists. 
+		/// CreateOid if db file not exists. 
 		/// </summary>
 		public const int JBOCREAT = 1 << 2;
 
@@ -947,7 +947,7 @@ namespace Ejdb.DB {
 			//static extern bool _ejdbsavebson([In] IntPtr coll, [In] byte[] bsdata, [Out] byte[] oid, bool merge);
 			rv = _ejdbsavebson(cptr, bsdata, oiddata, merge);
 			if (rv && bv == null) {
-                doc.Add(BsonConstants.Id, BsonValue.GetOID(new BsonOid(oiddata)));
+                doc.Add(BsonConstants.Id, BsonValue.Create(new BsonOid(oiddata)));
 			}
 			if (_throwonfail && !rv) {
 				throw new EJDBException(this);

@@ -129,27 +129,32 @@ namespace Ejdb.BSON {
 			it.Dispose();
 		}
 
-		public BsonDocument(byte[] bsdata) : this() {
-			using (BsonIterator it = new BsonIterator(bsdata)) {
-				while (it.Next() != BsonType.EOO) {
-					Add(it.CurrentKey, it.FetchCurrentValue());
-				}
-			}
+		public BsonDocument(byte[] bsdata) 
+            : this() 
+        {
+			using (var iterator = new BsonIterator(bsdata)) 
+            {
+                while (iterator.Next() != BsonType.EOO)
+                    Add(iterator.CurrentKey, iterator.FetchCurrentValue());
+            }
 		}
 
-		public BsonDocument(Stream bstream) : this() {
-			using (BsonIterator it = new BsonIterator(bstream)) {
-				while (it.Next() != BsonType.EOO) {
-					Add(it.CurrentKey, it.FetchCurrentValue());
-				}
-			}
+		public BsonDocument(Stream bstream) 
+            : this() 
+        {
+			using (var iterator = new BsonIterator(bstream)) 
+            {
+                while (iterator.Next() != BsonType.EOO)
+                    Add(iterator.CurrentKey, iterator.FetchCurrentValue());
+            }
 		}
 
-		public BsonDocument(BsonDocument doc) : this() {
-			foreach (var bv in doc._fields) {
-				Add(bv.Key, (BsonValue) bv.Value.Clone());
-			}
-		}
+		public BsonDocument(BsonDocument doc) 
+            : this() 
+        {
+		    foreach (var bv in doc._fields)
+		        Add(bv.Key, (BsonValue) bv.Value.Clone());
+        }
 
         public IEnumerator<BsonValueWithKey> GetEnumerator()
         {
@@ -165,7 +170,8 @@ namespace Ejdb.BSON {
 		/// Convert BSON document object into BSON binary data byte array.
 		/// </summary>
 		/// <returns>The byte array.</returns>
-		public byte[] ToByteArray() {
+		public byte[] ToByteArray() 
+        {
 			byte[] res;
 			using (var ms = new MemoryStream()) 
             {
@@ -175,7 +181,8 @@ namespace Ejdb.BSON {
 			return res;
 		}
 
-		public string ToDebugDataString() {
+		public string ToDebugDataString() 
+        {
 			return BitConverter.ToString(ToByteArray());
 		}
 
@@ -264,44 +271,40 @@ namespace Ejdb.BSON {
 		    _fields.Clear();
 		}
 
-		public void Serialize(Stream os) {
-			if (os.CanSeek) 
+		public void Serialize(Stream stream) 
+        {
+			if (stream.CanSeek) 
             {
-				long start = os.Position;
-				os.Position += 4; //skip int32 document size
-				using (var bw = new ExtBinaryWriter(os, Encoding.UTF8, true)) 
-                {
-					foreach (var bv in _fields) 
-						WriteBsonValue(bv.Key, bv.Value, bw);
-
-					bw.Write((byte) 0x00);
-					long end = os.Position;
-					os.Position = start;
-					bw.Write((int) (end - start));
-					os.Position = end; //go to the end
-				}
-			} else 
+				_WriteToSeekableStream(stream);
+            } 
+            else 
             {
-				byte[] darr;
-				var ms = new MemoryStream();
-				using (var bw = new ExtBinaryWriter(ms)) 
-                {
-					foreach (var bv in _fields) 
-						WriteBsonValue(bv.Key, bv.Value, bw);
-					
-					darr = ms.ToArray();
-				}	
-				using (var bw = new ExtBinaryWriter(os, Encoding.UTF8, true)) 
-                {
-					bw.Write(darr.Length + 4/*doclen*/ + 1/*0x00*/);
-					bw.Write(darr);
-					bw.Write((byte) 0x00); 
-				}
-			}
-			os.Flush();
+                var ms = new MemoryStream();
+                _WriteToSeekableStream(ms);
+                byte[] bytes = ms.ToArray();
+                stream.Write(bytes, 0, bytes.Length);
+            }
+			stream.Flush();
 		}
 
-		public override bool Equals(object obj) {
+	    private void _WriteToSeekableStream(Stream stream)
+	    {
+	        long start = stream.Position;
+	        stream.Position += 4; //skip int32 document size
+	        using (var bw = new ExtBinaryWriter(stream, Encoding.UTF8, true))
+	        {
+	            foreach (var bv in _fields)
+	                WriteBsonValue(bv.Key, bv.Value, bw);
+
+	            bw.Write((byte) 0x00);
+	            long end = stream.Position;
+	            stream.Position = start;
+	            bw.Write((int) (end - start));
+	            stream.Position = end; //go to the end
+	        }
+	    }
+
+	    public override bool Equals(object obj) {
 			if (obj == null) {
 				return false;
 			}
@@ -393,10 +396,7 @@ namespace Ejdb.BSON {
             return this;
         }
 
-	    protected virtual void CheckKey(string key) {
-		}
-
-        protected void WriteBsonValue(string key, BsonValue bv, ExtBinaryWriter bw) 
+	    protected void WriteBsonValue(string key, BsonValue bv, ExtBinaryWriter bw) 
         {
             BsonType bt = bv.BSONType;
             switch (bt)

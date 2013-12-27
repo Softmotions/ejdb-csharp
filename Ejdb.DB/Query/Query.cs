@@ -93,6 +93,16 @@ namespace Ejdb.DB
             return _CombinedQuery("$or", queries);
         }
 
+        public static IQuery Exists(string name)
+        {
+            return null;
+        }
+
+        public static IQuery ElemMatch(string name, BsonDocument queryDocument)
+        {
+            return null;
+        }
+
         private static IQuery _CombinedQuery(string combinator, IQuery[] queries)
         {
             var documents = queries.Select(x => x.GetQueryDocument()).ToArray();

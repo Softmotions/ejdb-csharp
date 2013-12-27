@@ -175,7 +175,7 @@ namespace Ejdb.DB {
 			IntPtr logsptr = IntPtr.Zero;
 			if ((qflags & EXPLAIN_FLAG) != 0) {
 				//static extern IntPtr _tcxstrnew();
-				logsptr = _tcxstrnew(); //Create dynamic query execution log buffer
+				logsptr = _tcxstrnew(); //CreateOid dynamic query execution log buffer
 			}
 			EJDBQCursor cur = null;
 			try {

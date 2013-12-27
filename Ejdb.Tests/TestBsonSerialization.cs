@@ -14,6 +14,7 @@
 //   Boston, MA 02111-1307 USA.
 // ============================================================================================
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Ejdb.BSON;
 using System.IO;
@@ -21,19 +22,34 @@ using System.IO;
 namespace Ejdb.Tests {
 
 	[TestFixture]
-	public class TestBSON {
+	public class TestBsonSerialization {
 
 		[Test]
-		public void TestSerializeEmpty() {
-			BsonDocument doc = new BsonDocument();
+		public void SerializeEmpty() 
+        {
+			var doc = new BsonDocument();
 			Assert.AreEqual("05-00-00-00-00", doc.ToDebugDataString()); 
 		}
 
+        [Test]
+        public void SerializeEmpty_WithoutSeek()
+        {
+            using (var stream = new StreamWithoutSeek())
+            {
+                var doc = new BsonDocument();
+                doc.Serialize(stream);
+
+                var bytes = BitConverter.ToString(stream.ToArray());
+                Assert.AreEqual("05-00-00-00-00", bytes);
+            }
+        }
+
 		[Test]
-		public void TestSerialize1() {
+		public void SerializeNumber() 
+        {
 			byte[] bdata;
 			BsonDocument doc = new BsonDocument();
-			doc.Add("0", BsonValue.GetNumber(1));
+			doc.Add("0", BsonValue.Create(1));
 			//0C-00-00-00 	len
 			//10		  	type
 			//30-00 		key
@@ -41,58 +57,109 @@ namespace Ejdb.Tests {
 			//00			zero term
 			bdata = doc.ToByteArray();
 			Assert.AreEqual("0C-00-00-00-10-30-00-01-00-00-00-00", doc.ToDebugDataString());
-			Assert.AreEqual(bdata.Length, (int) Convert.ToByte(doc.ToDebugDataString().Substring(0, 2), 16));
-
-			BsonDocument doc2 = new BsonDocument(doc.ToByteArray());
-			Assert.AreEqual(1, doc2.KeysCount);
-			int c = 0;
-			foreach (var bv in doc2) {
-				c++;		
-				Assert.IsNotNull(bv);
-				Assert.AreEqual(BsonType.INT, bv.BsonType);
-				Assert.AreEqual("0", bv.Key);
-				Assert.AreEqual(1, bv.Value);
-			}
-			Assert.That(c > 0);
-            doc2.Add("0", BsonValue.GetNumber(2));
-			Assert.AreEqual(1, doc2.KeysCount);
-			object ival = doc2["0"];
-			Assert.IsInstanceOf(typeof(int), ival);
-			Assert.AreEqual(2, ival);
-			doc2.Add("1", BsonValue.GetNumber(Int32.MaxValue));
-			//13-00-00-00
-			//10
-			//30-00
-			//02-00-00-00
-			//10-31-00
-			//FF-FF-FF-7F
-			//00
-			Assert.AreEqual("13-00-00-00-10-30-00-02-00-00-00-10-31-00-FF-FF-FF-7F-00", 
-			                doc2.ToDebugDataString());
-
-			doc2 = new BsonDocument(doc2);
-			Assert.AreEqual("13-00-00-00-10-30-00-02-00-00-00-10-31-00-FF-FF-FF-7F-00", 
-			                doc2.ToDebugDataString());
-
-			doc2 = new BsonDocument(doc2.ToByteArray());
-			Assert.AreEqual("13-00-00-00-10-30-00-02-00-00-00-10-31-00-FF-FF-FF-7F-00", 
-			                doc2.ToDebugDataString());
-
-			doc = new BsonDocument();
-			doc["a"] = 1;
-			Assert.AreEqual("0C-00-00-00-10-61-00-01-00-00-00-00", doc.ToDebugDataString());		
+			Assert.AreEqual(bdata.Length, (int) Convert.ToByte(doc.ToDebugDataString().Substring(0, 2), 16));					
 		}
 
+        [Test]
+        public void CreateBsonDocument()
+        {
+            var doc = new BsonDocument();
+            doc.Add("0", BsonValue.Create(1));
+            
+            var doc2 = new BsonDocument(doc.ToByteArray());
+            Assert.AreEqual(1, doc2.KeysCount);
+            Assert.AreEqual(1, doc["0"]);
+
+            doc2.Add("0", BsonValue.Create(2));
+            Assert.AreEqual(1, doc2.KeysCount);
+            Assert.AreEqual(2, doc2["0"]);
+
+            doc2.Add("1", BsonValue.Create(Int32.MaxValue));
+
+            //13-00-00-00   len
+            //10            type
+            //30-00         key
+            //02-00-00-00   int val
+            //10            type
+            //31-00         key
+            //FF-FF-FF-7F   value
+            //00            zero term
+            const string expectedByteArray = "13-00-00-00-10-30-00-02-00-00-00-10-31-00-FF-FF-FF-7F-00";
+
+            Assert.AreEqual(expectedByteArray, doc2.ToDebugDataString());
+
+            doc2 = new BsonDocument(doc2);
+            Assert.AreEqual(expectedByteArray, doc2.ToDebugDataString());
+
+            doc2 = new BsonDocument(doc2.ToByteArray());
+            Assert.AreEqual(expectedByteArray, doc2.ToDebugDataString());
+        }
+
+        [Test]
+        public void CreateBsonDocument2()
+        {
+            var doc = new BsonDocument();
+            doc["a"] = 1;
+            Assert.AreEqual("0C-00-00-00-10-61-00-01-00-00-00-00", doc.ToDebugDataString());
+        }
+
+        [Test]
+        public void SerializeString()
+        {
+            string byteString = @"\x16\x00\x00\x00\x02hello\x00\x06\x00\x00\x00world\x00\x00";
+            byte[] bytes = DecodeByteString(byteString);
+
+            var doc = new BsonDocument(bytes);
+            Assert.AreEqual(1, doc.KeysCount);
+
+            var value = doc["hello"];
+            Assert.AreEqual("world", value);
+        }
+
+
+        [Test]
+        public void SerializeArrayWithVariousTypes()
+        {
+            string byteString = @"1\x00\x00\x00\x04BSON\x00&\x00\x00\x00\x020\x00\x08\x00\x00\x00awesome\x00\x011\x00333333\x14@\x102\x00\xc2\x07\x00\x00\x00\x00";
+            byte[] bytes = DecodeByteString(byteString);
+
+            var doc = new BsonDocument(bytes);
+            Assert.AreEqual(1, doc.KeysCount);
+            var array = (BsonArray)doc["BSON"];
+
+            Assert.AreEqual("awesome", array[0]);
+            Assert.AreEqual(5.05, array[1]);
+            Assert.AreEqual(1986, array[2]);
+        }
+
+
+
 		[Test]
-		public void TestAnonTypes() {
+		public void TestAnonTypes() 
+        {
 			BsonDocument doc = BsonDocument.ValueOf(new {a = "b", c = 1});
-			//15-00-00-00
-			//02-61-00
-			//02-00-00-00
-			//62-00
-			//10-63-00-01-00-00-00-00
-			Assert.AreEqual("15-00-00-00-02-61-00-02-00-00-00-62-00-10-63-00-01-00-00-00-00", 
-			                doc.ToDebugDataString());
+
+            //13-00-00-00   len
+            //10            type
+            //30-00         key
+            //02-00-00-00   int val
+            //10            type
+            //31-00         key
+            //FF-FF-FF-7F   value
+            //00            zero term
+
+
+			//15-00-00-00           len
+			//02                    type 'string'
+            //61-00                 key 'a'   
+			//02-00-00-00           length of value 'b'           
+            //62-00                 value 'b'
+			//10                    type 'int'
+            //63-00                 key 'c'
+            //01-00-00-00           value 1
+            //00            zero term
+			Assert.AreEqual("15-00-00-00-02-61-00-02-00-00-00-62-00-10-63-00-01-00-00-00-00", doc.ToDebugDataString());
+
 			doc["d"] = new{e=new BsonRegexp("r1", "o2")}; //subdocument
 			//26-00-00-00-02-61-00-02-00-00-00-62-00-10-63-00-01-00-00-00-
 			//03
@@ -107,7 +174,8 @@ namespace Ejdb.Tests {
 		}
 
 		[Test]
-		public void TestIterate1() {
+		public void TestIterate1() 
+        {
 			var doc = new BsonDocument();
 			doc["a"] = "av";
 			doc["bb"] = 24;
@@ -283,8 +351,31 @@ namespace Ejdb.Tests {
 			Assert.AreEqual("s", doc2["ndoc.nnd.nns"]);
 			Assert.AreEqual("f", "f");
 			//Console.WriteLine("doc2=" + doc2);
-
 		}
+
+
+        private byte[] DecodeByteString(string byteString)
+        {
+            List<byte> bytes = new List<byte>(byteString.Length);
+            for (int i = 0; i < byteString.Length; )
+            {
+                char c = byteString[i++];
+                if (c == '\\' && ((c = byteString[i++]) != '\\'))
+                {
+                    int x = __hexDigits.IndexOf(char.ToLower(byteString[i++]));
+                    int y = __hexDigits.IndexOf(char.ToLower(byteString[i++]));
+                    bytes.Add((byte)(16 * x + y));
+                }
+                else
+                {
+                    bytes.Add((byte)c);
+                }
+            }
+            return bytes.ToArray();
+        }
+
+        private static string __hexDigits = "0123456789abcdef";
+
 	}
 }
 

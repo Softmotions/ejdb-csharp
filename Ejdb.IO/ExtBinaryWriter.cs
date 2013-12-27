@@ -32,7 +32,9 @@ namespace Ejdb.IO {
 		public ExtBinaryWriter(Stream output) : this(output, DEFAULT_ENCODING, false) {
 		}
 
-		public ExtBinaryWriter(Stream output, Encoding encoding, bool leaveopen) : base(output, encoding) {
+		public ExtBinaryWriter(Stream output, Encoding encoding, bool leaveopen) 
+            : base(output, encoding) 
+        {
 			_encoding = encoding;
 			_leaveopen = leaveopen;
 		}
@@ -43,7 +45,8 @@ namespace Ejdb.IO {
 		public ExtBinaryWriter(Stream output, bool leaveopen) : this(output, DEFAULT_ENCODING, leaveopen) {		
 		}
 
-		protected override void Dispose(bool disposing) {
+		protected override void Dispose(bool disposing) 
+        {
 			base.Dispose(!_leaveopen);
 		}
 
