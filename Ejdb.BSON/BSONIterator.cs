@@ -14,6 +14,7 @@
 //   Boston, MA 02111-1307 USA.
 // ============================================================================================
 using System;
+using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.IO;
@@ -153,12 +154,32 @@ namespace Ejdb.BSON {
 			}
 		}
 
-		public BsonDocument ToBsonDocument(params string[] fields) {
-			if (fields.Length > 0) {
+		public BsonDocument ToBsonDocument(params string[] fields)
+		{
+			if (fields.Length > 0)
 				return new BsonDocument(this, fields);
-			} else {
-				return new BsonDocument(this);
+
+			return new BsonDocument(this);
+		}
+
+		public T To<T>()
+		{
+			var classMap = BsonClassSerialization.LookupClassMap(typeof (T));
+			var obj = classMap.Creator();
+
+			while (Next() != BsonType.EOO)
+			{
+				BsonMemberMap memberMap;
+				if (classMap.AllMemberMaps.TryGetValue(CurrentKey, out memberMap))
+				{
+					var value = FetchCurrentValue();
+					memberMap.Setter(obj, value.Value);
+				}
+				else
+					Debug.Fail(string.Format("Could not find a property '{0}' on type {1}", CurrentKey, typeof (T).Name));
 			}
+
+			return (T) obj;
 		}
 
 		public BsonType Next() {

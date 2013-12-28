@@ -35,11 +35,13 @@ namespace sample
 			jb.ThrowExceptionOnFail = true;
 
 			var posts = new BsonDocument[5002];
+			var text = new string('-', 2000);
+
 			for (int i = 0; i < posts.Length; i++)
 			{
 				posts[i] = new BsonDocument()
 				{
-					{ "Text", BsonValue.Create(DateTime.Now) },
+					{ "Text", text },
 					{ "CreationDate", BsonValue.Create(DateTime.Now) },
 					{ "LastChangeDate", BsonValue.Create(DateTime.Now) },
 				};
@@ -48,19 +50,21 @@ namespace sample
 			var collectionName = "posts";
 			jb.Save(collectionName, posts);
 
-			int count = 500;
-			BsonDocument doc;
-			var watch = new Stopwatch();
-			watch.Start();
-			for (int i = 0; i < count; i++)
+			var tests = new Tests();
+			tests.Add(i => jb.Load(collectionName, (BsonOid) posts[i]["_id"]), "Load without serialization");
+			tests.Add(i =>
+				{
+					var iterator = jb.Load(collectionName, (BsonOid) posts[i]["_id"]);
+					iterator.ToBsonDocument();
+				}, "Load with deserialization as BSON document");
+
+			tests.Add(i =>
 			{
-				var iterator = jb.Load(collectionName, (BsonOid) posts[i]["_id"]);
-				doc = iterator.ToBsonDocument();
-			}
-
-			watch.Stop();
-
-			Console.WriteLine("Loading {0} documents took {1}ms", count, watch.ElapsedMilliseconds);
+				var iterator = jb.Load(collectionName, (BsonOid)posts[i]["_id"]);
+				iterator.To<Post>();
+			}, "Load with deserialization as Post object");
+			
+			tests.Run(500);
 			Console.ReadLine();
 		}
 
@@ -116,5 +120,13 @@ namespace sample
 
 			Console.ReadKey();
 		}
+	}
+
+	public class Post
+	{
+		public BsonOid _id { get; set; }
+		public string Text { get; set; }
+		public DateTime CreationDate { get; set; }
+		public DateTime LastChangeDate { get; set; }
 	}
 }
