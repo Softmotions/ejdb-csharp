@@ -1020,9 +1020,23 @@ namespace Ejdb.DB {
 
         public EJDBQCursor Find(string collection, IQuery query)
         {
-            var ejdbQuery = new EJDBQuery(this, query.GetQueryDocument(), collection);
-            return ejdbQuery.Find();
+            var ejdbQuery = new EJDBQuery(this, query.GetQueryDocument());
+			return ejdbQuery.Find(collection);
         }
+
+		public int Update(string collection, IQuery query, UpdateBuilder updateBuilder)
+		{
+			var document = new BsonDocument();
+
+			foreach (var field in query.GetQueryDocument())
+				document.Add(field.Key, field.Value);
+
+			foreach (var field in updateBuilder.Document)
+				document.Add(field.Key, field.Value);
+
+			var ejdbQuery = new EJDBQuery(this, document);
+			return ejdbQuery.Update(collection);
+		}
 
 		/// <summary>
 		/// Convert JSON string into BsonDocument.
