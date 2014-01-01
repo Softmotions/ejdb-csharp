@@ -17,9 +17,7 @@ namespace Ejdb.BSON
         public static BsonClassMap LookupClassMap(Type classType)
         {
             if (classType == null)
-            {
                 throw new ArgumentNullException("classType");
-            }
 
             __configurationLock.EnterReadLock();
             try

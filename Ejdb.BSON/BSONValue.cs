@@ -132,8 +132,8 @@ namespace Ejdb.BSON {
 				var classMap = BsonClassSerialization.LookupClassMap(type);
 				foreach (var member in classMap.AllMemberMaps)
 				{
-					var value = member.Getter(val);
-					bsonDocument.Add(member.ElementName, value);
+					var value = member.Value.Getter(val);
+					bsonDocument.Add(member.Value.ElementName, value);
 				}
 
 				return bsonDocument;
