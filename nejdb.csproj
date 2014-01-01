@@ -81,6 +81,7 @@
     <Compile Include="Ejdb.Tests\TestBsonOid.cs" />
     <Compile Include="Ejdb.Tests\TestBsonStringSerialization.cs" />
     <Compile Include="Ejdb.Tests\TestBsonSerialization.cs" />
+    <Compile Include="Ejdb.Tests\TestQuery.cs" />
     <Compile Include="Ejdb.Utils\HelperExtensions.cs" />
     <Compile Include="Ejdb.Utils\TypeExtension.cs" />
     <Compile Include="Ejdb.BSON\BSONType.cs" />
