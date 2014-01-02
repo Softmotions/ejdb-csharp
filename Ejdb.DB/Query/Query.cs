@@ -34,93 +34,101 @@ namespace Ejdb.DB
 		    get { return EmptyQuery.Instance; }
 	    }
 
-	    public static IQuery EQ(string fieldName, object value)
-        {
-            return new Query(fieldName, value);
+	    public static QueryBuilder EQ(string fieldName, object value)
+	    {
+		    return new QueryBuilder().EQ(fieldName, value);
+	    }
+
+		public static QueryBuilder EqualsIgnoreCase(string fieldName, string value)
+		{
+			return new QueryBuilder().EqualsIgnoreCase(fieldName, value);
         }
 
-        public static IQuery EqualsIgnoreCase(string fieldName, string value)
-        {
-            return _BinaryQuery("$icase", fieldName, value);
+		public static IQuery BeginsWith(string fieldName, string value)
+		{
+			return new QueryBuilder().BeginsWith(fieldName, value);
+		}
+
+		public static IQuery EndsWith(string fieldName, string value)
+		{
+			return new QueryBuilder().EndsWith(fieldName, value);
         }
 
-        public static IQuery BeginsWith(string fieldName, string value)
+		public static QueryBuilder GT(string fieldName, object value)
+		{
+			return new QueryBuilder().GT(fieldName, value);
+		}
+
+		public static QueryBuilder GTE(string fieldName, object value)
+		{
+			return new QueryBuilder().GTE(fieldName, value);
+		}
+
+		public static QueryBuilder LT(string fieldName, object value)
         {
-            return _BinaryQuery("$begin", fieldName, value);
+			return new QueryBuilder().LT(fieldName, value);
         }
 
-        public static IQuery EndsWith(string fieldName, string value)
+		public static QueryBuilder LTE(string fieldName, object value)
         {
-            return _BinaryQuery("end", fieldName, value);
+			return new QueryBuilder().LTE(fieldName, value);
         }
 
-        public static IQuery GT(string fieldName, object value)
-        {
-            return _BinaryQuery("$gt", fieldName, value);
+        public static QueryBuilder In<T>(string fieldName, params T[] comparisonValues)
+		{
+			return new QueryBuilder().In(fieldName, comparisonValues);
         }
 
-        public static IQuery GTE(string fieldName, object value)
-        {
-            return _BinaryQuery("$gte", fieldName, value);
+		public static QueryBuilder NotIn<T>(string fieldName, params T[] comparisonValues)
+		{
+			return new QueryBuilder().NotIn(fieldName, comparisonValues);
         }
 
-        public static IQuery LT(string fieldName, object value)
-        {
-            return _BinaryQuery("$lt", fieldName, value);
+        public static QueryBuilder NotEquals(string fieldName, object comparisonValue)
+		{
+			return new QueryBuilder().NotEquals(fieldName, comparisonValue);
         }
 
-        public static IQuery LTE(string fieldName, object value)
+        public static QueryBuilder Not(string fieldName, IPartialQuery query)
         {
-            return _BinaryQuery("$lte", fieldName, value);
+			return new QueryBuilder().Not(fieldName, query);
         }
 
-        public static IQuery In<T>(string fieldName, params T[] comparisonValues)
+        public static QueryBuilder Between<T>(string fieldName, T comparisonValue1, T comparisonValue2)
         {
-            return _BinaryQuery("$in", fieldName, comparisonValues);
+	        return new QueryBuilder().Between(fieldName, comparisonValue1, comparisonValue2);
         }
 
-        public static IQuery NotIn<T>(string fieldName, params T[] comparisonValues)
-        {
-            return _BinaryQuery("$nin", fieldName, comparisonValues);
-        }
-
-        public static IQuery NotEquals(string fieldName, object comparisonValue)
-        {
-            return _BinaryQuery("$not", fieldName, comparisonValue);
-        }
-
-        public static IQuery Not(string fieldName, IPartialQuery query)
-        {
-            var childValue = new BsonDocument();
-            childValue.Add(query.QueryOperator, query.ComparisonValue);
-            return _BinaryQuery("$not", fieldName, childValue);
-        }
-
-        public static IQuery Between<T>(string fieldName, T comparisonValue1, T comparisonValue2)
-        {
-            var comparisonValues = new[] { comparisonValue1, comparisonValue2 };
-            return _BinaryQuery("$bt", fieldName, comparisonValues);
-        }
-
-        public static IQuery And(params IQuery[] queries)
+        /* public static IQuery And(params QueryBuilder[] queries)
         {
             return _CombinedQuery("$and", queries);
-        }
+        } */
 
-        public static IQuery Or(params IQuery[] queries)
-        {
-            return _CombinedQuery("$or", queries);
-        }
+		public static IQuery Or(params QueryBuilder[] queries)
+		{
+			return new QueryBuilder().Or(queries);
+		}
 
         public static IQuery Exists(string fieldName)
         {
-            return _BinaryQuery("$exists", fieldName, true);
+	        return new QueryBuilder().Exists(fieldName);
         }
 
         public static IQuery NotExists(string fieldName)
         {
-            return _BinaryQuery("$exists", fieldName, false);
+	        return new QueryBuilder().NotExists(fieldName);
         }
+
+		public static IQuery StringMatchesAllTokens(string fieldName, params string[] values)
+		{
+			return new QueryBuilder().StringMatchesAllTokens(fieldName, values);
+		}
+
+		public static IQuery StringMatchesAnyTokens(string fieldName, params string[] values)
+		{
+			return new QueryBuilder().StringMatchesAnyTokens(fieldName, values);
+		}
+
 
         public static IQuery ElemMatch(string fieldName, params IQuery[] queries)
         {
@@ -128,30 +136,21 @@ namespace Ejdb.DB
 
             foreach (var query in queries)
             {
-                foreach (var field in query.GetQueryDocument())
+                foreach (var field in query.Document)
                     queryDocument[field.Key] = field.Value;
             }
 
             return new Query("$elemMatch", queryDocument);
         }
 
-        private static IQuery _CombinedQuery(string combinator, params IQuery[] queries)
-        {
-            var documents = queries.Select(x => x.GetQueryDocument()).ToArray();
-            var childValue = new BsonArray(documents);
-            return new Query(combinator, childValue);
-        }
+		public BsonDocument Document
+		{
+			get { return mQueryDocument; }
+		}
 
-        private static IQuery _BinaryQuery(string queryOperation, string fieldName, object comparisonValue)
-        {
-            var query1 = new BsonDocument();
-            query1[queryOperation] = comparisonValue;
-            return new Query(fieldName, query1);
-        }
-
-        public BsonDocument GetQueryDocument()
-        {
-            return mQueryDocument;
-        }
+		public static QueryBuilder Join(string fieldName, string foreignCollectionName)
+		{
+			return new QueryBuilder().Join(fieldName, foreignCollectionName);
+		}
     }
 }
