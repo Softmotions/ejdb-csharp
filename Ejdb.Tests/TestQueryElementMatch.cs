@@ -56,18 +56,16 @@ namespace Ejdb.Tests
 		[Test]
 		public void Example1()
 		{
-			var results = _db.Find(COLLECTION_NAME, Query.And(
-				Query.EQ("zipcode", 109),
-				Query.ElemMatch("students", Query.EQ("school", 102))
+			var results = _db.Find(COLLECTION_NAME, Query
+					.EQ("zipcode", 109)
+					.ElemMatch("students", Query.EQ("school", 102)
 			)).Select(x => x.ToBsonDocument()).ToArray();
 
-			Assert.That(results.Length, Is.EqualTo(3));
+			Assert.That(results.Length, Is.EqualTo(2));
 
 			// this is different from MongoDb
-
 			Assert.That(_GetNumberOfStudents(results[0]), Is.EqualTo(3)); // should be 1
-			Assert.That(_GetNumberOfStudents(results[1]), Is.EqualTo(2)); // should be 0
-			Assert.That(_GetNumberOfStudents(results[2]), Is.EqualTo(1)); // should be 1
+			Assert.That(_GetNumberOfStudents(results[1]), Is.EqualTo(1)); 
 		}
 
 		private int _GetNumberOfStudents(BsonDocument document)

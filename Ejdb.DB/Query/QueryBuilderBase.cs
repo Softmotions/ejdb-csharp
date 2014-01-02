@@ -131,15 +131,23 @@ namespace Ejdb.DB
 
 		public TThis Or(params IQuery[] queries)
 		{
-			return _CombinedQuery("$or", queries);
-		}
-
-		private TThis _CombinedQuery(string combinator, params IQuery[] queries)
-		{
 			var documents = queries.Select(x => x.Document).ToArray();
 			var childValue = new BsonArray(documents);
-			_document[combinator] = childValue;
+			_document["$or"] = childValue;
 			return This();
+		}
+
+		public TThis ElemMatch(string fieldName, params IQuery[] queries)
+		{
+			var queryDocument = new BsonDocument();
+
+			foreach (var query in queries)
+			{
+				foreach (var field in query.Document)
+					queryDocument[field.Key] = field.Value;
+			}
+			
+			return _BinaryQuery("$elemMatch", fieldName, queryDocument);
 		}
 
 		private T _GetOrCreateElement<T>(string elementName, Func<T> defaultValue)
