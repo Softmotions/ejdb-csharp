@@ -49,10 +49,7 @@ namespace Ejdb.BSON {
 
         public object this[int key]
         {
-            get
-            {
-                return GetObjectValue(key.ToString());
-            }
+            get { return GetObjectValue(key.ToString()); }
         }
 
 		public void SetMaxKey(int idx)

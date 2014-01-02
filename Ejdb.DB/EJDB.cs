@@ -980,12 +980,12 @@ namespace Ejdb.DB {
 		/// <summary>
 		/// Removes stored objects from the collection.
 		/// </summary>
-		/// <param name="cname">Name of collection.</param>
+		/// <param name="collection">Name of collection.</param>
 		/// <param name="oids">Object identifiers.</param>
-        public bool Remove(string cname, params BsonOid[] oids)
+        public bool Remove(string collection, params BsonOid[] oids)
         {
 			CheckDisposed();
-			IntPtr cptr = _ejdbgetcoll(_db, cname);
+			IntPtr cptr = _ejdbgetcoll(_db, collection);
 			if (cptr == IntPtr.Zero) {
 				return true;
 			}
@@ -1000,6 +1000,16 @@ namespace Ejdb.DB {
 				}
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// Removes objects matching the given query from the collection.
+		/// </summary>
+		/// <param name="collection">Name of collection.</param>
+		/// <param name="query">The query which filters the collection.</param>
+		public int Remove(string collection, IQuery query)
+		{
+			return Update(collection, query, new UpdateBuilder().DropAll());
 		}
 
 		/// <summary>
@@ -1020,9 +1030,31 @@ namespace Ejdb.DB {
 
         public EJDBQCursor Find(string collection, IQuery query)
         {
-            var ejdbQuery = new EJDBQuery(this, query.GetQueryDocument(), collection);
-            return ejdbQuery.Find();
+            var ejdbQuery = new EJDBQuery(this, query.GetQueryDocument());
+			return ejdbQuery.Find(collection);
         }
+
+		public int Update(string collection, IQuery query, UpdateBuilder updateBuilder)
+		{
+			return Update(collection, query, updateBuilder.Document);
+		}
+
+		public int Update(string collection, IQuery query, BsonDocument updateDocument)
+		{
+			var document = new BsonDocument();
+
+			if (query != null)
+			{
+				foreach (var field in query.GetQueryDocument())
+					document.Add(field.Key, field.Value);
+			}
+
+			foreach (var field in updateDocument)
+				document.Add(field.Key, field.Value);
+
+			var ejdbQuery = new EJDBQuery(this, document);
+			return ejdbQuery.Update(collection);
+		}
 
 		/// <summary>
 		/// Convert JSON string into BsonDocument.

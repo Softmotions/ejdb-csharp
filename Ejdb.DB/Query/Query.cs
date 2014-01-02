@@ -19,7 +19,7 @@ using Ejdb.BSON;
 
 namespace Ejdb.DB
 {
-    public class Query : IQuery
+	public class Query : IQuery
     {
         private readonly BsonDocument mQueryDocument;
 
@@ -29,7 +29,12 @@ namespace Ejdb.DB
             mQueryDocument[fieldName] = query;
         }
 
-        public static IQuery EQ(string fieldName, object value)
+	    public static IQuery Empty
+	    {
+		    get { return EmptyQuery.Instance; }
+	    }
+
+	    public static IQuery EQ(string fieldName, object value)
         {
             return new Query(fieldName, value);
         }

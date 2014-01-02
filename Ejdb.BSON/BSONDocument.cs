@@ -221,7 +221,16 @@ namespace Ejdb.BSON {
 		/// <see cref="BsonValue"/>
 		public object GetObjectValue(string key) {
 			var bv = GetBsonValue(key);
-			return bv != null ? bv.Value : null;
+			return bv != null ? _UnwrapValue(bv.Value) : null;
+		}
+
+		private object _UnwrapValue(object value)
+		{
+			var array = value as BsonArray;
+			if (array == null)
+				return value;
+
+			return array.Select(x => _UnwrapValue(x.Value)).ToArray();
 		}
 
 		/// <summary>
