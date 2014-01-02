@@ -71,12 +71,12 @@ namespace Ejdb.DB
             return new QueryBuilder<TDocument>().NotIn(memberExpression, comparisonValues);
         }
 
-        public static IQuery NotEquals<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
+		public static QueryBuilder<TDocument> NotEquals<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
         {
             return new QueryBuilder<TDocument>().NotEquals(memberExpression, value);
         }
 
-        public static IQuery Not<TMember>(Expression<Func<TDocument, TMember>> memberExpression, PartialQuery<TMember> query) 
+		public static QueryBuilder<TDocument> Not<TMember>(Expression<Func<TDocument, TMember>> memberExpression, PartialQuery<TMember> query) 
         {
             return new QueryBuilder<TDocument>().Not(memberExpression, query);
         }
@@ -86,29 +86,29 @@ namespace Ejdb.DB
             return new QueryBuilder<TDocument>().Between(memberExpression, comparisonValue1, comparisonValue2);
         }
 
-        public static IQuery Exists<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
+		public static QueryBuilder<TDocument> Exists<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
         {
 			return new QueryBuilder<TDocument>().Exists(memberExpression);
         }
 
-        public static IQuery NotExists<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
+		public static QueryBuilder<TDocument> NotExists<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
         {
             return new QueryBuilder<TDocument>().NotExists(memberExpression);
         }
 
-		/* public static QueryBuilder<TDocument> And<TMember>(QueryBuilder<TDocument>[] queries)
+		public static QueryBuilder<TDocument> StringMatchesAllTokens(Expression<Func<TDocument, string>> memberExpression, params string[] values)
 		{
-			
-		} */
+			return new QueryBuilder<TDocument>().StringMatchesAllTokens(memberExpression, values);
+		}
+
+		public static QueryBuilder<TDocument> StringMatchesAnyTokens(Expression<Func<TDocument, string>> memberExpression, params string[] values)
+		{
+			return new QueryBuilder<TDocument>().StringMatchesAnyTokens(memberExpression, values);
+		}
 
 		public static QueryBuilder<TDocument> Or(params QueryBuilder<TDocument>[] queries)
 		{
 			return new QueryBuilder<TDocument>().Or(queries);
 		}
-
-        private static string _GetFieldName<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
-        {
-            return DynamicReflectionHelper.GetProperty(memberExpression).Name;
-        }
     }
 }

@@ -45,13 +45,13 @@ namespace Ejdb.DB
         }
 
 		public static IQuery BeginsWith(string fieldName, string value)
-        {
-            return _BinaryQuery("$begin", fieldName, value);
-        }
+		{
+			return new QueryBuilder().BeginsWith(fieldName, value);
+		}
 
 		public static IQuery EndsWith(string fieldName, string value)
-        {
-            return _BinaryQuery("end", fieldName, value);
+		{
+			return new QueryBuilder().EndsWith(fieldName, value);
         }
 
 		public static QueryBuilder GT(string fieldName, object value)
@@ -119,6 +119,17 @@ namespace Ejdb.DB
 	        return new QueryBuilder().NotExists(fieldName);
         }
 
+		public static IQuery StringMatchesAllTokens(string fieldName, params string[] values)
+		{
+			return new QueryBuilder().StringMatchesAllTokens(fieldName, values);
+		}
+
+		public static IQuery StringMatchesAnyTokens(string fieldName, params string[] values)
+		{
+			return new QueryBuilder().StringMatchesAnyTokens(fieldName, values);
+		}
+
+
         public static IQuery ElemMatch(string fieldName, params IQuery[] queries)
         {
             var queryDocument = new BsonDocument();
@@ -130,20 +141,6 @@ namespace Ejdb.DB
             }
 
             return new Query("$elemMatch", queryDocument);
-        }
-
-        private static IQuery _CombinedQuery(string combinator, params QueryBuilder[] queries)
-        {
-            var documents = queries.Select(x => x.Document).ToArray();
-            var childValue = new BsonArray(documents);
-            return new Query(combinator, childValue);
-        }
-
-        private static IQuery _BinaryQuery(string queryOperation, string fieldName, object comparisonValue)
-        {
-            var query1 = new BsonDocument();
-            query1[queryOperation] = comparisonValue;
-            return new Query(fieldName, query1);
         }
 
 		public BsonDocument Document

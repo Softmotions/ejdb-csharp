@@ -119,12 +119,15 @@ namespace Ejdb.DB
 			return This();
 		}
 
-		/* public TThis And(params QueryBuilder[] queries)
+		public TThis StringMatchesAllTokens(string fieldName, params string[] values)
 		{
-			return 
-				
-				_CombinedQuery("$and", queries);
-		} */
+			return _BinaryQuery("$strand", fieldName, values);
+		}
+
+		public TThis StringMatchesAnyTokens(string fieldName, params string[] values)
+		{
+			return _BinaryQuery("$stror", fieldName, values);
+		}
 
 		public TThis Or(params IQuery[] queries)
 		{

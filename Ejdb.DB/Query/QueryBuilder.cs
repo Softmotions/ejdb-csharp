@@ -60,29 +60,39 @@ namespace Ejdb.DB
 			return NotIn(_GetFieldName(memberExpression), comparisonValues);
 		}
 
-		public IQuery NotEquals<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
+		public QueryBuilder<TDocument> NotEquals<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
 		{
 			return NotEquals(_GetFieldName(memberExpression), value);
 		}
 
-		public IQuery Not<TMember>(Expression<Func<TDocument, TMember>> memberExpression, PartialQuery<TMember> query)
+		public QueryBuilder<TDocument> Not<TMember>(Expression<Func<TDocument, TMember>> memberExpression, PartialQuery<TMember> query)
 		{
 			return Not(_GetFieldName(memberExpression), query);
 		}
 
-		public IQuery Between<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember comparisonValue1, TMember comparisonValue2)
+		public QueryBuilder<TDocument> Between<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember comparisonValue1, TMember comparisonValue2)
 		{
 			return Between(_GetFieldName(memberExpression), comparisonValue1, comparisonValue2);
 		}
 
-		public IQuery Exists<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
+		public QueryBuilder<TDocument> Exists<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
 		{
 			return Exists(_GetFieldName(memberExpression));
 		}
 
-		public IQuery NotExists<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
+		public QueryBuilder<TDocument> NotExists<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
 		{
 			return NotExists(_GetFieldName(memberExpression));
+		}
+
+		public QueryBuilder<TDocument> StringMatchesAllTokens(Expression<Func<TDocument, string>> memberExpression, params string[] values)
+		{
+			return StringMatchesAllTokens(_GetFieldName(memberExpression), values);
+		}
+
+		public QueryBuilder<TDocument> StringMatchesAnyTokens(Expression<Func<TDocument, string>> memberExpression, params string[] values)
+		{
+			return StringMatchesAnyTokens(_GetFieldName(memberExpression), values);
 		}
 
 		private string _GetFieldName<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
