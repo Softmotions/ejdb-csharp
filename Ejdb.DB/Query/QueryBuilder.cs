@@ -10,6 +10,8 @@ namespace Ejdb.DB
 			return this;
 		}
 
+
+
 		public QueryBuilder<TDocument> EQ<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
 		{
 			return EQ(_GetFieldName(memberExpression), value);
@@ -93,6 +95,11 @@ namespace Ejdb.DB
 		public QueryBuilder<TDocument> StringMatchesAnyTokens(Expression<Func<TDocument, string>> memberExpression, params string[] values)
 		{
 			return StringMatchesAnyTokens(_GetFieldName(memberExpression), values);
+		}
+
+		public QueryBuilder<TDocument> ElemMatch<TProperty>(Expression<Func<TDocument, TProperty>> memberExpression, params IQuery[] queries)
+		{
+			return ElemMatch(_GetFieldName(memberExpression), queries);
 		}
 
 		private string _GetFieldName<TMember>(Expression<Func<TDocument, TMember>> memberExpression)

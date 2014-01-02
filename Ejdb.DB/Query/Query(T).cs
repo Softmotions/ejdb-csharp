@@ -110,5 +110,10 @@ namespace Ejdb.DB
 		{
 			return new QueryBuilder<TDocument>().Or(queries);
 		}
+
+		public static QueryBuilder<TDocument> ElemMatch<TProperty>(Expression<Func<TDocument, TProperty>> memberExpression, params IQuery[] queries)
+		{
+			return new QueryBuilder<TDocument>().ElemMatch(memberExpression, queries);
+		}
     }
 }
