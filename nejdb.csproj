@@ -65,6 +65,7 @@
     <Compile Include="Ejdb.BSON\BSONValueWithKey.cs" />
     <Compile Include="Ejdb.DB\EJDB.cs" />
     <Compile Include="Ejdb.DB\Query\DynamicReflectionHelper.cs" />
+    <Compile Include="Ejdb.DB\Query\EmptyQuery.cs" />
     <Compile Include="Ejdb.DB\Query\IPartialQuery.cs" />
     <Compile Include="Ejdb.DB\Query\PartialQuery%28T%29.cs" />
     <Compile Include="Ejdb.DB\Query\PartialQuery.cs" />

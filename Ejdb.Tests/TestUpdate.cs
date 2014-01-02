@@ -41,5 +41,17 @@ namespace Ejdb.Tests
 			doc = _db.Load(COLLECTION_NAME, (BsonOid) doc["_id"]).ToBsonDocument();
 			Assert.AreEqual(2, doc["x"]);
 		}
+
+		[Test]
+		public void TestUpdateEmptyQueryDocument()
+		{
+			var doc = new BsonDocument().Add("x", 1);
+			_db.Save(COLLECTION_NAME, doc);
+			var countMatched = _db.Update(COLLECTION_NAME, Query.Empty, Update.Set("x", 2));
+			Assert.That(countMatched, Is.EqualTo(1));
+
+			doc = _db.Load(COLLECTION_NAME, (BsonOid)doc["_id"]).ToBsonDocument();
+			Assert.AreEqual(2, doc["x"]);
+		}
 	}
 }
