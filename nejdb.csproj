@@ -76,6 +76,7 @@
     <Compile Include="Ejdb.BSON\Serialization\BsonMemberMap.cs" />
     <Compile Include="Ejdb.DB\Query\Update.cs" />
     <Compile Include="Ejdb.DB\Query\UpdateBuilder.cs" />
+    <Compile Include="Ejdb.Utils\Verify.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryReader.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryWriter.cs" />
     <Compile Include="Ejdb.DB\Query\IQuery.cs" />
@@ -107,6 +108,11 @@
     <Compile Include="Ejdb.DB\EJDBQCursor.cs" />
     <Compile Include="Ejdb.BSON\BsonNull.cs" />
     <Compile Include="Ejdb.BSON\BSONUndefined.cs" />
+    <Compile Include="Ejdb.Utils\VerifyResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VerifyResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -121,6 +127,13 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Ejdb.Utils\VerifyResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>VerifyResources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Ejdb</CustomToolNamespace>
+    </EmbeddedResource>
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

@@ -12,7 +12,7 @@ namespace Ejdb.Tests
         private EJDB _db;
         private const string COLLECTION_NAME = "results";
 
-        [SetUp]
+        [TestFixtureSetUp]
         public void Setup()
         {
             _db = new EJDB("testdb1", EJDB.DEFAULT_OPEN_MODE | EJDB.JBOTRUNC);
