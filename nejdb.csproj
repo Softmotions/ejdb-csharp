@@ -79,6 +79,7 @@
     <Compile Include="Ejdb.DB\Query\Update.cs" />
     <Compile Include="Ejdb.DB\Query\UpdateBuilder.cs" />
     <Compile Include="Ejdb.Tests\TestCollectionJoins.cs" />
+    <Compile Include="Ejdb.Tests\TestQueryElementMatch.cs" />
     <Compile Include="Ejdb.Utils\Verify.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryReader.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryWriter.cs" />
