@@ -18,30 +18,14 @@ using System;
 namespace Ejdb.BSON {
 
 	[Serializable]
-	public sealed class BsonCodeWScope : BsonDocument {
+	public sealed class BsonNull : IBsonValue {
 
-		readonly string _code;
+		public static BsonNull VALUE = new BsonNull();
 
-		public override BsonType BSONType {
+		public BsonType BSONType {
 			get {
-				return BsonType.CODEWSCOPE;
+				return BsonType.NULL;
 			}
-		}
-
-		public string Code {
-			get {
-				return _code;
-			}
-		}
-
-		public BsonDocument Scope {
-			get {
-				return this;
-			}
-		}
-
-		public BsonCodeWScope(string code) {
-			this._code = code;
 		}
 
 		public override bool Equals(object obj) {
@@ -51,18 +35,18 @@ namespace Ejdb.BSON {
 			if (ReferenceEquals(this, obj)) {
 				return true;
 			}
-			if (!(obj is BsonCodeWScope)) {
+			if (!(obj is BsonNull)) {
 				return false;
 			}
-			BsonCodeWScope cw = (BsonCodeWScope) obj;
-			if (_code != cw._code) {
-				return false;
-			}
-			return base.Equals(obj);
+			return true;
 		}
 
 		public override int GetHashCode() {
-			return (_code != null ? _code.GetHashCode() : 0) ^ base.GetHashCode();
+			return 0;
+		}
+
+		public override string ToString() {
+			return "[BsonNull]";
 		}
 	}
 }

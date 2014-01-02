@@ -19,7 +19,7 @@ using System.IO;
 namespace Ejdb.BSON {
 
 	[Serializable]
-	public sealed class BSONBinData {
+	public sealed class BsonBinData {
 		readonly byte _subtype;
 		readonly byte[] _data;
 
@@ -35,13 +35,13 @@ namespace Ejdb.BSON {
 			}
 		}
 
-		public BSONBinData(byte subtype, byte[] data) {
+		public BsonBinData(byte subtype, byte[] data) {
 			_subtype = subtype;
 			_data = new byte[data.Length];
 			Array.Copy(data, _data, data.Length); 
 		}
 
-		internal BSONBinData(byte subtype, int len, BinaryReader input) {
+		internal BsonBinData(byte subtype, int len, BinaryReader input) {
 			_subtype = subtype;
 			_data = input.ReadBytes(len);
 		}

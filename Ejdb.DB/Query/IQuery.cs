@@ -1,6 +1,6 @@
-// ============================================================================================
+﻿// ============================================================================================
 //   .NET API for EJDB database library http://ejdb.org
-//   Copyright (C) 2012-2013 Softmotions Ltd <info@softmotions.com>
+//   Copyright (C) 2013-2014 Oliver Klemencic <oliver.klemencic@gmail.com>
 //
 //   This file is part of EJDB.
 //   EJDB is free software; you can redistribute it and/or modify it under the terms of
@@ -14,17 +14,12 @@
 //   Boston, MA 02111-1307 USA.
 // ============================================================================================
 
-namespace Ejdb.BSON {
+using Ejdb.BSON;
 
-	/// <summary>
-	/// Base interface of any BSON complex values like Regexp or BSON Timestamp.
-	/// </summary>
-	public interface IBsonValue {
-
-		/// <summary>
-		/// BSON Type of complex value.
-		/// </summary>
-		/// <value>The type of the BSON.</value>
-		BsonType BSONType { get; }
-	}
+namespace Ejdb.DB
+{
+    public interface IQuery
+    {
+	    BsonDocument Document { get; }
+    }
 }

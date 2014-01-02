@@ -1,6 +1,6 @@
-// ============================================================================================
+﻿// ============================================================================================
 //   .NET API for EJDB database library http://ejdb.org
-//   Copyright (C) 2012-2013 Softmotions Ltd <info@softmotions.com>
+//   Copyright (C) 2013-2014 Oliver Klemencic <oliver.klemencic@gmail.com>
 //
 //   This file is part of EJDB.
 //   EJDB is free software; you can redistribute it and/or modify it under the terms of
@@ -14,17 +14,27 @@
 //   Boston, MA 02111-1307 USA.
 // ============================================================================================
 
-namespace Ejdb.BSON {
+using Ejdb.DB;
 
-	/// <summary>
-	/// Base interface of any BSON complex values like Regexp or BSON Timestamp.
-	/// </summary>
-	public interface IBsonValue {
+namespace Ejdb.Utils
+{
+    public static class HelperExtensions
+    {
+        public static EJDBQCursor Find<T>(this EJDB db, IQuery query)
+        {
+            var collection = _GetCollectionName<T>();
+            return db.Find(collection, query);
+        }
 
-		/// <summary>
-		/// BSON Type of complex value.
-		/// </summary>
-		/// <value>The type of the BSON.</value>
-		BsonType BSONType { get; }
-	}
+        public static bool Save<T>(this EJDB db, params T[] objects)
+        {
+            var collection = _GetCollectionName<T>();
+            return db.Save(collection, objects);
+        }
+
+        private static string _GetCollectionName<T>()
+        {
+            return typeof (T).Name.ToLower();
+        }
+    }
 }

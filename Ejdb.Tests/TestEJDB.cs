@@ -49,24 +49,25 @@ namespace Ejdb.Tests {
 		public void Test3SaveLoad() {
 			EJDB jb = new EJDB("testdb1", EJDB.DEFAULT_OPEN_MODE | EJDB.JBOTRUNC);
 			Assert.IsTrue(jb.IsOpen);
-			BSONDocument doc = new BSONDocument().SetNumber("age", 33);
-			Assert.IsNull(doc["_id"]);
+		    BsonDocument doc = new BsonDocument();
+            doc.Add("age", BsonValue.Create(33));
+            Assert.IsNull(doc[BsonConstants.Id]);
 			bool rv = jb.Save("mycoll", doc);
 			Assert.IsTrue(rv);
 			Assert.IsNotNull(doc["_id"]);
-			Assert.IsInstanceOf(typeof(BSONOid), doc["_id"]); 
+            Assert.IsInstanceOf(typeof(BsonOid), doc["_id"]); 
 			rv = jb.Save("mycoll", doc);
 			Assert.IsTrue(rv);
 
-			BSONIterator it = jb.Load("mycoll", doc["_id"] as BSONOid);
+            BsonIterator it = jb.Load("mycoll", doc["_id"] as BsonOid);
 			Assert.IsNotNull(it);
 
-			BSONDocument doc2 = it.ToBSONDocument();
+			BsonDocument doc2 = it.ToBsonDocument();
 			Assert.AreEqual(doc.ToDebugDataString(), doc2.ToDebugDataString());
 			Assert.IsTrue(doc == doc2);
 
 			Assert.AreEqual(1, jb.CreateQueryFor("mycoll").Count());
-			Assert.IsTrue(jb.Remove("mycoll", doc["_id"] as BSONOid));
+            Assert.IsTrue(jb.Remove("mycoll", doc["_id"] as BsonOid));
 			Assert.AreEqual(0, jb.CreateQueryFor("mycoll").Count());
 
 			jb.Save("mycoll", doc);
@@ -82,21 +83,22 @@ namespace Ejdb.Tests {
 		public void Test4Q1() {
 			EJDB jb = new EJDB("testdb1", EJDB.DEFAULT_OPEN_MODE | EJDB.JBOTRUNC);
 			Assert.IsTrue(jb.IsOpen);
-			BSONDocument doc = new BSONDocument().SetNumber("age", 33);
+		    var doc = new BsonDocument();
+		    doc.Add("age", BsonValue.Create(33));
 			Assert.IsNull(doc["_id"]);
 			bool rv = jb.Save("mycoll", doc);
 			Assert.IsTrue(rv);
 			Assert.IsNotNull(doc["_id"]);
-			EJDBQuery q = jb.CreateQuery(BSONDocument.ValueOf(new{age = 33}), "mycoll");
+			EJDBQuery q = jb.CreateQuery(BsonDocument.ValueOf(new{age = 33}), "mycoll");
 			Assert.IsNotNull(q);
 			using (EJDBQCursor cursor = q.Find()) {
 				Assert.IsNotNull(cursor);
 				Assert.AreEqual(1, cursor.Length);
 				int c = 0;
-				foreach (BSONIterator oit in cursor) {
+				foreach (BsonIterator oit in cursor) {
 					c++;
 					Assert.IsNotNull(oit);
-					BSONDocument rdoc = oit.ToBSONDocument();
+					BsonDocument rdoc = oit.ToBsonDocument();
 					Assert.IsTrue(rdoc.HasKey("_id"));
 					Assert.AreEqual(33, rdoc["age"]);
 				}
@@ -119,44 +121,45 @@ namespace Ejdb.Tests {
 		}
 
 		[Test]
-		public void Test4Q2() {
+		public void Test4Q2() 
+        {
 			EJDB jb = new EJDB("testdb1", EJDB.DEFAULT_OPEN_MODE | EJDB.JBOTRUNC);
 			Assert.IsTrue(jb.IsOpen);
 
-			var parrot1 = BSONDocument.ValueOf(new{
+			var parrot1 = BsonDocument.ValueOf(new{
 				name = "Grenny",
 				type = "African Grey",
 				male = true, 
 				age = 1,
 				birthdate = DateTime.Now,
 				likes = new string[] { "green color", "night", "toys" },
-				extra1 = BSONull.VALUE
+				extra1 = BsonNull.VALUE
 			});
 
-			var parrot2 = BSONDocument.ValueOf(new{
+			var parrot2 = BsonDocument.ValueOf(new{
 				name = "Bounty",
 				type = "Cockatoo",
 				male = false,
 				age = 15,
 				birthdate = DateTime.Now,
 				likes = new string[] { "sugar cane" },
-				extra1 = BSONull.VALUE
+				extra1 = BsonNull.VALUE
 			});
 			Assert.IsTrue(jb.Save("parrots", parrot1, parrot2));
 			Assert.AreEqual(2, jb.CreateQueryFor("parrots").Count()); 
 
 			var q = jb.CreateQuery(new{
-					name = new BSONRegexp("(grenny|bounty)", "i")
+					name = new BsonRegexp("(grenny|bounty)", "i")
 			}).SetDefaultCollection("parrots").OrderBy("name");
 
 			using (var cur = q.Find()) {
 				Assert.AreEqual(2, cur.Length);
 
-				var doc = cur[0].ToBSONDocument();
+				var doc = cur[0].ToBsonDocument();
 				Assert.AreEqual("Bounty", doc["name"]);
 				Assert.AreEqual(15, doc["age"]);
 
-				doc = cur[1].ToBSONDocument();
+				doc = cur[1].ToBsonDocument();
 				Assert.AreEqual("Grenny", doc["name"]);
 				Assert.AreEqual(1, doc["age"]);
 			}
@@ -178,13 +181,13 @@ namespace Ejdb.Tests {
 			Assert.AreEqual(2, q.Count());
 
 			//Console.WriteLine(jb.DBMeta);
-			//[BSONDocument: [BSONValue: BSONType=STRING, Key=file, Value=testdb1], 
-			//[BSONValue: BSONType=ARRAY, Key=collections, Value=[BSONArray: [BSONValue: BSONType=OBJECT, Key=0, Value=[BSONDocument: [BSONValue: BSONType=STRING, Key=name, Value=parrots], [BSONValue: BSONType=STRING, Key=file, Value=testdb1_parrots], [BSONValue: BSONType=LONG, Key=records, Value=2], [BSONValue: BSONType=OBJECT, Key=options, Value=[BSONDocument: [BSONValue: BSONType=LONG, Key=buckets, Value=131071], [BSONValue: BSONType=LONG, Key=cachedrecords, Value=0], [BSONValue: BSONType=BOOL, Key=large, Value=False], [BSONValue: BSONType=BOOL, Key=compressed, Value=False]]], [BSONValue: BSONType=ARRAY, Key=indexes, Value=[BSONArray: ]]]]]]]
+			//[BsonDocument: [BsonValue: BsonType=STRING, Key=file, Value=testdb1], 
+			//[BsonValue: BsonType=ARRAY, Key=collections, Value=[BsonArray: [BsonValue: BsonType=OBJECT, Key=0, Value=[BsonDocument: [BsonValue: BsonType=STRING, Key=name, Value=parrots], [BsonValue: BsonType=STRING, Key=file, Value=testdb1_parrots], [BsonValue: BsonType=LONG, Key=records, Value=2], [BsonValue: BsonType=OBJECT, Key=options, Value=[BsonDocument: [BsonValue: BsonType=LONG, Key=buckets, Value=131071], [BsonValue: BsonType=LONG, Key=cachedrecords, Value=0], [BsonValue: BsonType=BOOL, Key=large, Value=False], [BsonValue: BsonType=BOOL, Key=compressed, Value=False]]], [BsonValue: BsonType=ARRAY, Key=indexes, Value=[BsonArray: ]]]]]]]
 
 			q.Dispose();
 
 			//Test command execution
-			BSONDocument cmret = jb.Command(BSONDocument.ValueOf(new {
+			BsonDocument cmret = jb.Command(BsonDocument.ValueOf(new {
 				ping = ""
 			}));
 			Assert.IsNotNull(cmret);

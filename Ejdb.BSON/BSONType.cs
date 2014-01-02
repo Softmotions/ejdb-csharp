@@ -17,7 +17,7 @@ namespace Ejdb.BSON {
 
 	/** <summary> BSON types according to the bsonspec (http://bsonspec.org/)</summary> */ 
 
-	public enum BSONType : byte {
+	public enum BsonType : byte {
 		UNKNOWN = 0xfe,
 		EOO = 0x00,
 		DOUBLE = 0x01,

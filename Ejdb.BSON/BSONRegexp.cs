@@ -21,15 +21,15 @@ namespace Ejdb.BSON {
 	/// BSON Regexp complex value.
 	/// </summary>
 	[Serializable]
-	public sealed class BSONRegexp : IBSONValue {
+	public sealed class BsonRegexp : IBsonValue {
 
 		readonly string _re;
 
 		readonly string _opts;
 
-		public BSONType BSONType {
+		public BsonType BSONType {
 			get {
-				return BSONType.REGEX;
+				return BsonType.REGEX;
 			}
 		}
 
@@ -45,13 +45,13 @@ namespace Ejdb.BSON {
 			}
 		}
 
-		BSONRegexp() {
+		BsonRegexp() {
 		}
 
-		public BSONRegexp(string re) : this(re, "") {
+		public BsonRegexp(string re) : this(re, "") {
 		}
 
-		public BSONRegexp(string re, string opts) {
+		public BsonRegexp(string re, string opts) {
 			this._re = re;
 			this._opts = opts;
 		}
@@ -63,10 +63,10 @@ namespace Ejdb.BSON {
 			if (ReferenceEquals(this, obj)) {
 				return true;
 			}
-			if (!(obj is BSONRegexp)) {
+			if (!(obj is BsonRegexp)) {
 				return false;
 			}
-			BSONRegexp other = (BSONRegexp) obj;
+			BsonRegexp other = (BsonRegexp) obj;
 			return (_re == other._re && _opts == other._opts);
 		}
 
@@ -77,7 +77,7 @@ namespace Ejdb.BSON {
 		}
 
 		public override string ToString() {
-			return string.Format("[BSONRegexp: re={0}, opts={1}]", _re, _opts);
+			return string.Format("[BsonRegexp: re={0}, opts={1}]", _re, _opts);
 		}
 	}
 }

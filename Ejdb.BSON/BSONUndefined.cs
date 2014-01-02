@@ -17,13 +17,13 @@ using System;
 
 namespace Ejdb.BSON {
 
-	public sealed class BSONUndefined : IBSONValue {
+	public sealed class BsonUndefined : IBsonValue {
 
-		public static BSONUndefined VALUE = new BSONUndefined();
+		public static BsonUndefined VALUE = new BsonUndefined();
 
-		public BSONType BSONType {
+		public BsonType BSONType {
 			get {
-				return BSONType.UNDEFINED;
+				return BsonType.UNDEFINED;
 			}
 		}
 
@@ -34,7 +34,7 @@ namespace Ejdb.BSON {
 			if (ReferenceEquals(this, obj)) {
 				return true;
 			}
-			if (!(obj is BSONUndefined)) {
+			if (!(obj is BsonUndefined)) {
 				return false;
 			}
 			return true;
@@ -45,7 +45,7 @@ namespace Ejdb.BSON {
 		}
 
 		public override string ToString() {
-			return "[BSONUndefined]";
+			return "[BsonUndefined]";
 		}
 	}
 }

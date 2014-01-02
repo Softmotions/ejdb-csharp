@@ -60,14 +60,41 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Ejdb.BSON\BsonOid.cs" />
+    <Compile Include="Ejdb.BSON\BsonSerializationException.cs" />
+    <Compile Include="Ejdb.BSON\BSONValueWithKey.cs" />
     <Compile Include="Ejdb.DB\EJDB.cs" />
+    <Compile Include="Ejdb.DB\Query\DynamicReflectionHelper.cs" />
+    <Compile Include="Ejdb.DB\Query\EmptyQuery.cs" />
+    <Compile Include="Ejdb.DB\Query\IPartialQuery.cs" />
+    <Compile Include="Ejdb.DB\Query\PartialQuery%28T%29.cs" />
+    <Compile Include="Ejdb.DB\Query\PartialQuery.cs" />
+    <Compile Include="Ejdb.DB\Query\Query%28T%29.cs" />
+    <Compile Include="Ejdb.DB\Query\Query.cs" />
+    <Compile Include="Ejdb.BSON\Serialization\BsonClassMap.cs" />
+    <Compile Include="Ejdb.BSON\Serialization\BsonClassSerialization.cs" />
+    <Compile Include="Ejdb.BSON\Serialization\BsonMemberMap.cs" />
+    <Compile Include="Ejdb.DB\Query\QueryBuilder.cs" />
+    <Compile Include="Ejdb.DB\Query\QueryBuilderBase.cs" />
+    <Compile Include="Ejdb.DB\Query\Update.cs" />
+    <Compile Include="Ejdb.DB\Query\UpdateBuilder.cs" />
+    <Compile Include="Ejdb.Tests\TestCollectionJoins.cs" />
+    <Compile Include="Ejdb.Tests\TestQueryElementMatch.cs" />
+    <Compile Include="Ejdb.Utils\Verify.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryReader.cs" />
     <Compile Include="Ejdb.IO\ExtBinaryWriter.cs" />
-    <Compile Include="Ejdb.Tests\TestBSON.cs" />
+    <Compile Include="Ejdb.DB\Query\IQuery.cs" />
+    <Compile Include="Ejdb.Tests\MockStream.cs" />
+    <Compile Include="Ejdb.Tests\TestBsonArray.cs" />
+    <Compile Include="Ejdb.Tests\TestBsonOid.cs" />
+    <Compile Include="Ejdb.Tests\TestBsonStringSerialization.cs" />
+    <Compile Include="Ejdb.Tests\TestBsonSerialization.cs" />
+    <Compile Include="Ejdb.Tests\TestQuery.cs" />
+    <Compile Include="Ejdb.Tests\TestUpdate.cs" />
+    <Compile Include="Ejdb.Utils\HelperExtensions.cs" />
     <Compile Include="Ejdb.Utils\TypeExtension.cs" />
     <Compile Include="Ejdb.BSON\BSONType.cs" />
     <Compile Include="Ejdb.BSON\InvalidBSONDataException.cs" />
-    <Compile Include="Ejdb.BSON\BSONOid.cs" />
     <Compile Include="Ejdb.BSON\BSONTimestamp.cs" />
     <Compile Include="Ejdb.BSON\BSONRegexp.cs" />
     <Compile Include="Ejdb.BSON\IBSONValue.cs" />
@@ -83,8 +110,13 @@
     <Compile Include="Ejdb.DB\EJDBQuery.cs" />
     <Compile Include="Ejdb.DB\EJDBQueryException.cs" />
     <Compile Include="Ejdb.DB\EJDBQCursor.cs" />
-    <Compile Include="Ejdb.BSON\BSONull.cs" />
+    <Compile Include="Ejdb.BSON\BsonNull.cs" />
     <Compile Include="Ejdb.BSON\BSONUndefined.cs" />
+    <Compile Include="Ejdb.Utils\VerifyResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VerifyResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -99,6 +131,13 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Ejdb.Utils\VerifyResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>VerifyResources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Ejdb</CustomToolNamespace>
+    </EmbeddedResource>
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

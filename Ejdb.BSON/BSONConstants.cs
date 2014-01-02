@@ -20,9 +20,10 @@ namespace Ejdb.BSON {
 	/// <summary>
 	/// Various BSON processing constants and shared values.
 	/// </summary>
-	public static class BSONConstants {
+	public static class BsonConstants {
 
-		static BSONConstants() {
+		static BsonConstants() 
+        {
 			Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 		}
 
@@ -30,6 +31,32 @@ namespace Ejdb.BSON {
 		/// Gets or sets the epoch.
 		/// </summary>
 		public static DateTime Epoch { get; private set; }
+
+        /// <summary>
+        /// The name of the id field
+        /// </summary>
+	    public const string Id = "_id";
+
+        /// <summary>
+        /// Converts a DateTime to UTC (with special handling for MinValue and MaxValue).
+        /// </summary>
+        /// <param name="dateTime">A DateTime.</param>
+        /// <returns>The DateTime in UTC.</returns>
+        public static DateTime ToUniversalTime(DateTime dateTime)
+        {
+            if (dateTime == DateTime.MinValue)
+            {
+                return DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+            }
+            else if (dateTime == DateTime.MaxValue)
+            {
+                return DateTime.SpecifyKind(DateTime.MaxValue, DateTimeKind.Utc);
+            }
+            else
+            {
+                return dateTime.ToUniversalTime();
+            }
+        }
 	}
 }
 

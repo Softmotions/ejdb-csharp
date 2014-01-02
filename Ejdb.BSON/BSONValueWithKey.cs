@@ -1,6 +1,6 @@
-// ============================================================================================
+﻿// ============================================================================================
 //   .NET API for EJDB database library http://ejdb.org
-//   Copyright (C) 2012-2013 Softmotions Ltd <info@softmotions.com>
+//   Copyright (C) 2013-2014 Oliver Klemencic <oliver.klemencic@gmail.com>
 //
 //   This file is part of EJDB.
 //   EJDB is free software; you can redistribute it and/or modify it under the terms of
@@ -13,41 +13,20 @@
 //   if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 //   Boston, MA 02111-1307 USA.
 // ============================================================================================
-using System;
 
-namespace Ejdb.BSON {
+namespace Ejdb.BSON
+{
+    public class BsonValueWithKey
+    {
+        public BsonValueWithKey(string key, BsonValue value, BsonType type)
+        {
+            Value = value.Value;
+            Key = key;
+        }
 
-	[Serializable]
-	public sealed class BSONull : IBSONValue {
+        public object Value { get; private set; }
 
-		public static BSONull VALUE = new BSONull();
-
-		public BSONType BSONType {
-			get {
-				return BSONType.NULL;
-			}
-		}
-
-		public override bool Equals(object obj) {
-			if (obj == null) {
-				return false;
-			}
-			if (ReferenceEquals(this, obj)) {
-				return true;
-			}
-			if (!(obj is BSONull)) {
-				return false;
-			}
-			return true;
-		}
-
-		public override int GetHashCode() {
-			return 0;
-		}
-
-		public override string ToString() {
-			return "[BSONull]";
-		}
-	}
+        public string Key { get; private set; }
+        
+    }
 }
-

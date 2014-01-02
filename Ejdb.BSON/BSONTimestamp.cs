@@ -21,22 +21,22 @@ namespace Ejdb.BSON {
 	/// BSON Timestamp complex value.
 	/// </summary>
 	[Serializable]
-	public sealed class BSONTimestamp : IBSONValue {
+	public sealed class BsonTimestamp : IBsonValue {
 
 		readonly int _inc;
 		readonly int _ts;
 
-		BSONTimestamp() {
+		BsonTimestamp() {
 		}
 
-		public BSONTimestamp(int inc, int ts) {
+		public BsonTimestamp(int inc, int ts) {
 			this._inc = inc;
 			this._ts = ts;
 		}
 
-		public BSONType BSONType {
+		public BsonType BSONType {
 			get {
-				return BSONType.TIMESTAMP;
+				return BsonType.TIMESTAMP;
 			}
 		}
 
@@ -59,10 +59,10 @@ namespace Ejdb.BSON {
 			if (ReferenceEquals(this, obj)) {
 				return true;
 			}
-			if (!(obj is BSONTimestamp)) {
+			if (!(obj is BsonTimestamp)) {
 				return false;
 			}
-			BSONTimestamp other = (BSONTimestamp) obj;
+			BsonTimestamp other = (BsonTimestamp) obj;
 			return (_inc == other._inc && _ts == other._ts);
 		}
 
@@ -73,7 +73,7 @@ namespace Ejdb.BSON {
 		}
 
 		public override string ToString() {
-			return string.Format("[BSONTimestamp: inc={0}, ts={1}]", _inc, _ts);
+			return string.Format("[BsonTimestamp: inc={0}, ts={1}]", _inc, _ts);
 		}
 	}
 }
