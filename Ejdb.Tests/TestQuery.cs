@@ -35,7 +35,7 @@ namespace Ejdb.Tests
          [Test]
          public void Queries()
          {
-             _QueryResults(1, Query.EQ("MeasuredTemperature", 5));
+             _QueryResults(1, new QueryBuilder().EQ("MeasuredTemperature", 5));
              _QueryResults(1, Query<MeasurementResult>.EQ(x => x.MeasuredTemperature, 5));
 
              _QueryResults(1, Query.EQ("UserName", "test5"));
@@ -68,22 +68,21 @@ namespace Ejdb.Tests
              _QueryResults(1, Query.EqualsIgnoreCase("UserName", "TeSt5"));
              _QueryResults(1, Query<MeasurementResult>.EqualsIgnoreCase(x => x.UserName, "TeSt5"));
 
-             _QueryResults(5, Query.And(
-                 Query.GT("MeasuredTemperature", 50),
-                 Query.EQ("OpticalRotation", 5)
-             ));
 
-             _QueryResults(5, Query.And(
-                 Query<MeasurementResult>.GT(x => x.MeasuredTemperature, 50),
-                 Query<MeasurementResult>.EQ(x => x.OpticalRotation, 5)
-             ));
+	         _QueryResults(5, Query
+				 .GT("MeasuredTemperature", 50)
+				 .EQ("OpticalRotation", 5));
+
+			 _QueryResults(5, Query<MeasurementResult>
+				 .GT(x => x.MeasuredTemperature, 50)
+				 .EQ(x => x.OpticalRotation, 5));
 
              _QueryResults(11, Query.Or(
                  Query.GT("MeasuredTemperature", 98),
                  Query.EQ("OpticalRotation", 1)
              ));
 
-             _QueryResults(11, Query.Or(
+			 _QueryResults(11, Query<MeasurementResult>.Or(
                 Query<MeasurementResult>.GT(x => x.MeasuredTemperature, 98),
                 Query<MeasurementResult>.EQ(x => x.OpticalRotation, 1)
             ));

@@ -113,13 +113,13 @@ namespace Ejdb.DB
 			Verify.NotNull(name, "name");
 			Verify.NotNull(value, "value");
 
-			var element = _GetElement(operationName);
+			var element = _GetOrCreateElement(operationName);
 			element.Add(name, value);
 
 			return this;
 		}
 
-		private BsonDocument _GetElement(string operationName)
+		private BsonDocument _GetOrCreateElement(string operationName)
 		{
 			var element = _document[operationName] as BsonDocument;
 			if (element == null)

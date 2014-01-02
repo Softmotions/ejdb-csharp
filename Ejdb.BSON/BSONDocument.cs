@@ -219,7 +219,8 @@ namespace Ejdb.BSON {
 		/// </remarks>
 		/// <param name="key">BSON document key</param>
 		/// <see cref="BsonValue"/>
-		public object GetObjectValue(string key) {
+		public object GetObjectValue(string key) 
+		{
 			var bv = GetBsonValue(key);
 			return bv != null ? _UnwrapValue(bv.Value) : null;
 		}
@@ -251,23 +252,24 @@ namespace Ejdb.BSON {
 		/// <param name="key">Key.</param>
 		/// <returns>Key object </c> or <c>null</c> if the key is not exists or value type is either 
 		/// <see cref="BsonType.NULL"/> or <see cref="BsonType.UNDEFINED"/></returns>
-		public object this[string key] {
-			get {
+		public object this[string key] 
+		{
+			get 
+			{
 				int ind;
-				if ((ind = key.IndexOf(".", StringComparison.Ordinal)) == -1) {
+				if ((ind = key.IndexOf(".", StringComparison.Ordinal)) == -1)
 					return GetObjectValue(key);
-				} else {
-					string prefix = key.Substring(0, ind);
-					var doc = GetObjectValue(prefix) as BsonDocument;
-					if (doc == null || key.Length < ind + 2) {
-						return null;
-					}
-					return doc[key.Substring(ind + 1)];
+				
+				string prefix = key.Substring(0, ind);
+				var doc = GetObjectValue(prefix) as BsonDocument;
+				if (doc == null || key.Length < ind + 2) {
+					return null;
 				}
+				return doc[key.Substring(ind + 1)];
 			}
 			set
 			{
-		    var bsonValue = BsonValue.ValueOf(value);
+				var bsonValue = BsonValue.ValueOf(value);
 			    Add(key, bsonValue);
 			}
 		}

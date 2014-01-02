@@ -5,14 +5,13 @@ namespace Ejdb.DB
 	internal class EmptyQuery : IQuery
 	{
 		private EmptyQuery()
-		{
-		}
+		{ }
 
 		public static EmptyQuery Instance = new EmptyQuery();
 
-		public BsonDocument GetQueryDocument()
+		public BsonDocument Document
 		{
-			return new BsonDocument();
+			get { return new BsonDocument(); }
 		}
 	}
 }

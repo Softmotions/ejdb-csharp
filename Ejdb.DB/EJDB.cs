@@ -1030,7 +1030,7 @@ namespace Ejdb.DB {
 
         public EJDBQCursor Find(string collection, IQuery query)
         {
-            var ejdbQuery = new EJDBQuery(this, query.GetQueryDocument());
+            var ejdbQuery = new EJDBQuery(this, query.Document);
 			return ejdbQuery.Find(collection);
         }
 
@@ -1045,7 +1045,7 @@ namespace Ejdb.DB {
 
 			if (query != null)
 			{
-				foreach (var field in query.GetQueryDocument())
+				foreach (var field in query.Document)
 					document.Add(field.Key, field.Value);
 			}
 

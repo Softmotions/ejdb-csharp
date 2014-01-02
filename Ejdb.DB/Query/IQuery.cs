@@ -20,6 +20,6 @@ namespace Ejdb.DB
 {
     public interface IQuery
     {
-        BsonDocument GetQueryDocument();
+	    BsonDocument Document { get; }
     }
 }

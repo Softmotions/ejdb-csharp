@@ -21,95 +21,90 @@ namespace Ejdb.DB
 {
     public static class Query<TDocument>
     {
-        public static IQuery EQ<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
+		public static QueryBuilder<TDocument> EQ<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.EQ(fieldName, value);
+			return new QueryBuilder<TDocument>().EQ(memberExpression, value);
         }
 
-        public static IQuery EqualsIgnoreCase(Expression<Func<TDocument, string>> memberExpression, string value)
+		public static QueryBuilder<TDocument> EqualsIgnoreCase(Expression<Func<TDocument, string>> memberExpression, string value)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.EqualsIgnoreCase(fieldName, value);
+			return new QueryBuilder<TDocument>().EqualsIgnoreCase(memberExpression, value);
         }
 
-        public static IQuery BeginsWith(Expression<Func<TDocument, string>> memberExpression, string value)
+		public static QueryBuilder<TDocument> BeginsWith(Expression<Func<TDocument, string>> memberExpression, string value)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.BeginsWith(fieldName, value);
+			return new QueryBuilder<TDocument>().BeginsWith(memberExpression, value);
         }
 
-        public static IQuery EndsWith(Expression<Func<TDocument, string>> memberExpression, string value)
+		public static QueryBuilder<TDocument> EndsWith(Expression<Func<TDocument, string>> memberExpression, string value)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.EndsWith(fieldName, value);
+			return new QueryBuilder<TDocument>().EndsWith(memberExpression, value);
         }
 
-        public static IQuery GT<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
+		public static QueryBuilder<TDocument> GT<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.GT(fieldName, value);
+			return new QueryBuilder<TDocument>().GT(memberExpression, value);
         }
 
-        public static IQuery GTE<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
+		public static QueryBuilder<TDocument> GTE<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.GTE(fieldName, value);
+			return new QueryBuilder<TDocument>().GTE(memberExpression, value);
         }
 
-        public static IQuery LT<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
+		public static QueryBuilder<TDocument> LT<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.LT(fieldName, value);
+			return new QueryBuilder<TDocument>().LT(memberExpression, value);
         }
 
-        public static IQuery LTE<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
+		public static QueryBuilder<TDocument> LTE<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.LTE(fieldName, value);
+			return new QueryBuilder<TDocument>().LTE(memberExpression, value);
         }
 
-        public static IQuery In<TMember>(Expression<Func<TDocument, TMember>> memberExpression, params TMember[] comparisonValues)
+		public static QueryBuilder<TDocument> In<TMember>(Expression<Func<TDocument, TMember>> memberExpression, params TMember[] comparisonValues)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.In(fieldName, comparisonValues);
+            return new QueryBuilder<TDocument>().In(memberExpression, comparisonValues);
         }
 
-        public static IQuery NotIn<TMember>(Expression<Func<TDocument, TMember>> memberExpression, params TMember[] comparisonValues)
+		public static QueryBuilder<TDocument> NotIn<TMember>(Expression<Func<TDocument, TMember>> memberExpression, params TMember[] comparisonValues)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.NotIn(fieldName, comparisonValues);
+            return new QueryBuilder<TDocument>().NotIn(memberExpression, comparisonValues);
         }
 
         public static IQuery NotEquals<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember value)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.NotEquals(fieldName, value);
+            return new QueryBuilder<TDocument>().NotEquals(memberExpression, value);
         }
 
         public static IQuery Not<TMember>(Expression<Func<TDocument, TMember>> memberExpression, PartialQuery<TMember> query) 
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.Not(fieldName, query);
+            return new QueryBuilder<TDocument>().Not(memberExpression, query);
         }
 
         public static IQuery Between<TMember>(Expression<Func<TDocument, TMember>> memberExpression, TMember comparisonValue1, TMember comparisonValue2)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.Between(fieldName, comparisonValue1, comparisonValue2);
+            return new QueryBuilder<TDocument>().Between(memberExpression, comparisonValue1, comparisonValue2);
         }
 
         public static IQuery Exists<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.Exists(fieldName);
+			return new QueryBuilder<TDocument>().Exists(memberExpression);
         }
 
         public static IQuery NotExists<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
         {
-            var fieldName = _GetFieldName(memberExpression);
-            return Query.NotExists(fieldName);
+            return new QueryBuilder<TDocument>().NotExists(memberExpression);
         }
+
+		/* public static QueryBuilder<TDocument> And<TMember>(QueryBuilder<TDocument>[] queries)
+		{
+			
+		} */
+
+		public static QueryBuilder<TDocument> Or(params QueryBuilder<TDocument>[] queries)
+		{
+			return new QueryBuilder<TDocument>().Or(queries);
+		}
 
         private static string _GetFieldName<TMember>(Expression<Func<TDocument, TMember>> memberExpression)
         {
