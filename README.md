@@ -10,12 +10,12 @@ Windows
 
 **Prerequisites**
 
- * EJDB C library >= v1.1.13
+ * EJDB C library >= v1.2.x
  * .Net >= 4.0 runtime
  * MSVS 2012 OR Xamarin studio (optional)
 
-Download appropriate [EJDB binary distribution](https://github.com/Softmotions/ejdb/blob/master/tcejdb/WIN32.md).
-Then add the directory containing the `tcejdbdll.dll` into search `PATH`.
+Download [EJDB binary distribution](http://ejdb.org/doc/install/index.html).
+Then add a directory containing the `ejdb.dll` into search `PATH`.
 Use the following solution configs to debug and test: `DebugWindows`, `ReleaseWindows`
 
 If you have problems please follow this checklist:
@@ -23,27 +23,24 @@ If you have problems please follow this checklist:
 **Windows checklist**
 
   0. Ensure .Net framework >= 4.0 installed
-  1. For x86 CPU download [tcejdb-1.x.x-mingw32-i686](https://github.com/Softmotions/ejdb/blob/master/tcejdb/WIN32.md)
-  2. For x64 CPU download [tcejdb-1.x.x-mingw32-x86_64](https://github.com/Softmotions/ejdb/blob/master/tcejdb/WIN32.md)
-  3. Ensure you have placed `tcejdbdll.dll` into the `%PATH%`
-  4. Open the sample `nejdb.sln` solution.
-  5. Ensure that the project configutation is either: `DebugWindows` OR `ReleaseWindows`
-  6. If a target platform CPU differs from current host CPU you have to use appropriated `tcejdbdll.dll` for target and
+  1. Download windows binaries http://ejdb.org/doc/install/windows.html
+  2. Ensure you have placed `ejdb.dll` into the `%PATH%`
+  3. Open the sample `nejdb.sln` solution.
+  4. Ensure that the project configutation is either: `DebugWindows` OR `ReleaseWindows`
+  5. If a target platform CPU differs from current host CPU you have to use appropriated `ejdb.dll` for target and
     change the project's CPU platform configuration.
-
 
 Unix
 ---------------------------------
 
 **Prerequisites**
- * EJDB C library >= v1.1.13
- * Mono 3.0 runtime
+ * [EJDB C library >= v1.2.x](http://ejdb.org/doc/install/index.html)
+ * Mono >= 3.0 runtime
  * Monodeveloper (optional)
 
-Install the tcejdb >= 1.1.13 as system-wide library.
-The `tcejdb.so` shared library should be visible to the system linker.
+Install the ejdb as system-wide library.
+The `libejdb.so` shared library should be visible to the system linker.
 Use the following solution configs to debug and test: `DebugUnix`, `ReleaseUnix`
-
 
 One snippet intro
 ---------------------------------
