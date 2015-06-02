@@ -450,13 +450,7 @@ namespace Ejdb.DB {
 		}
 
 		public void Close() {
-			if (_db != IntPtr.Zero) {
-				IntPtr db = _db;
-				_db = IntPtr.Zero;
-				if (db != IntPtr.Zero) {
-					_ejdbclose(db);
-				}
-			}
+			Dispose();
 		}
 
 		/// <summary>
