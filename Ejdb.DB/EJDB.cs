@@ -449,6 +449,16 @@ namespace Ejdb.DB {
 			}
 		}
 
+		public void Close() {
+			if (_db != IntPtr.Zero) {
+				IntPtr db = _db;
+				_db = IntPtr.Zero;
+				if (db != IntPtr.Zero) {
+					_ejdbclose(db);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Automatically creates new collection if it does't exists.
 		/// </summary>
