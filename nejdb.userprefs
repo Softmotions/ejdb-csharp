@@ -1,36 +1,9 @@
-﻿<Properties>
+﻿<Properties StartupItem="nejdb.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="DebugUnix" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Ejdb.DB/EJDB.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Ejdb.Tests/TestBSON.cs">
     <Files>
-      <File FileName="Ejdb.DB/EJDB.cs" Line="1" Column="1" />
-      <File FileName="Ejdb.DB/EJDBQuery.cs" Line="1" Column="1" />
-      <File FileName="Ejdb.Utils/Native.cs" Line="1" Column="1" />
-      <File FileName="Ejdb.BSON/BSONIterator.cs" Line="1" Column="1" />
+      <File FileName="Ejdb.Tests/TestBSON.cs" Line="111" Column="33" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State expanded="True" selected="True">
-          <Node name="nejdb" expanded="True">
-            <Node name="Ejdb.BSON" expanded="True" />
-            <Node name="Ejdb.DB" expanded="True" />
-            <Node name="Ejdb.Utils" expanded="True" />
-          </Node>
-          <Node name="sample" expanded="True" />
-        </State>
-      </Pad>
-      <Pad Id="ClassPad">
-        <State expanded="True" selected="True" />
-      </Pad>
-      <Pad Id="MonoDevelop.Debugger.WatchPad">
-        <State />
-      </Pad>
-      <Pad Id="ConnectionManagerPad">
-        <State selected="True" />
-      </Pad>
-      <Pad Id="MonoDevelop.NUnit.TestPad">
-        <State expanded="True" selected="True" />
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
@@ -39,4 +12,5 @@
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <AuthorInfo Name="Adamansky Anton" Email="info@softmotions.com" Copyright="Copyright (C) 2012-2015 Softmotions Ltd &lt;info@softmotions.com&gt;" Company="Softmotions Ltd" Trademark="" />
 </Properties>

@@ -1,6 +1,6 @@
 // ============================================================================================
 //   .NET API for EJDB database library http://ejdb.org
-//   Copyright (C) 2012-2013 Softmotions Ltd <info@softmotions.com>
+//   Copyright (C) 2012-2015 Softmotions Ltd <info@softmotions.com>
 //
 //   This file is part of EJDB.
 //   EJDB is free software; you can redistribute it and/or modify it under the terms of
@@ -139,9 +139,9 @@ namespace Ejdb.DB {
 		/// Name if EJDB library
 		/// </summary>
 		#if EJDBDLL
-		public const string EJDB_LIB_NAME = "tcejdbdll";
-#else
-		public const string EJDB_LIB_NAME = "tcejdb";
+		public const string EJDB_LIB_NAME = "libejdb";
+		#else
+		public const string EJDB_LIB_NAME = "ejdb";
 		#endif
 		/// <summary>
 		/// Pointer to the native EJDB instance.
@@ -419,9 +419,6 @@ namespace Ejdb.DB {
 		/// <param name="path">The main database file path.</param>
 		/// <param name="omode">Open mode.</param>
 		public EJDB(string path, int omode = DEFAULT_OPEN_MODE) {
-			if (EJDB.LibHexVersion < 0x1113) {
-				throw new EJDBException("EJDB library version must be at least '1.1.13' or greater");
-			}
 			bool rv;
 			_db = _ejdbnew();
 			if (_db == IntPtr.Zero) {
